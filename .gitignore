@@ -1,3 +1,6 @@
+#VSS junk
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -44,7 +47,10 @@ Temporary Items
 
 #Visual Studio Excess Junk
 x64
+.vs
 Debug
 Packages
 BattleShip/Debug
 BattleShip/x64
+*.sdf
+*.suo
