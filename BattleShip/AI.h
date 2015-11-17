@@ -1,5 +1,6 @@
 #pragma once
 #include "Board.h"
+#include "GameLogic.h"
 //Game Difficulty
 enum Difficulty {
 	//Just random hits
@@ -9,21 +10,21 @@ enum Difficulty {
 	//Knows players ships ahead of time
 	Hard
 };
-class AI {
+class AI : public Player {
 public:
 	AI();
 	//Creates the AI instance
-	AI(Difficulty Intelligence, Board *EnemyBoard);
-	//Makes a move
-	void MakeMove();
+	AI(Difficulty intel, Board *b);
+	//
+	Coordinate GetMove();
+	MoveResult GetMoveResult(Coordinate c);
+	GameResult GetResult();
 	void PlacePieces();
 private:
 	/* http://www.datagenetics.com/blog/december32011/ */
 	//EasyAI, just random hits
 	void EasyAI();
 	Difficulty aiIntel;
-	Board *AIBoard;
-	Coordinate *Hits;
 	//MediumAI, uses random hits + direction attempting
 	void MediumAI();
 	Coordinate current;//Current Coordinate

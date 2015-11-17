@@ -52,19 +52,42 @@ struct Piece {
 	string Name;
 	//Piece type
 	PieceType Type;
+
+	/*Move's*/
+
+	//Moves pieces one up
+	void shiftUp();
+	//Moves piece one down
+	void shiftDown();
+	//Moves Piece one left
+	void shiftLeft();
+	//Moves Piece one right
+	void shiftRight();
+	//Rotates piece to the left
+	void rotateLeft();
+	//Rotates piece to the right
+	void rotateRight();
+	//Get's the position of each space the ship occupies
+	Coordinate *GetOccupiedSpace();
 };
 //A ten by ten array of pieces
 struct Board {
 	//Default construcutor
 	Board();
 	//Intializes the Board
-	Piece **GameBoard;
-	//The collection of hits
-	vector<Coordinate> Hits; 
+	vector<Piece> BoardPieces;
+	//The collection of hits on this board
+	vector<Coordinate> *Hits; 
 	//Add's a hit
 	void AddHit(Coordinate hit);
 	//Tell's you if the coordinate has already been hit
 	bool IsHit(Coordinate hit);
+	//Get's the the GameState of the board
+	GameResult BoardResult();
+	//Valid place to put piece
+	bool ValidPieceSpot(Piece loc);
+	//Next valid spot to put piece
+	void NextValidPieceSpot(Piece *loc, bool isVertical, bool isRotating);
 	//Deletes all instance data
 	void Delete();
 };

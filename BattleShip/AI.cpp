@@ -5,12 +5,12 @@ AI::AI() {
 
 }
 
-AI::AI(Difficulty Intelligence, Board *EnemyBoard) {
-	aiIntel = Intelligence;
-	AIBoard = EnemyBoard;
+AI::AI(Difficulty intel, Board *b) {
+	aiIntel = intel;
+	AIBoard = b;
 }
 
-void AI::MakeMove() {
+Coordinate AI::GetMove() {
 	/*if (aiIntel == Easy) {
 		EasyAI();
 	}
@@ -20,6 +20,7 @@ void AI::MakeMove() {
 	else {
 		AdvanceAI();
 	}*/
+	return Coordinate{ 0,0 };
 }
 
 void AI::PlacePieces() {
