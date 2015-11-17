@@ -17,6 +17,7 @@ public:
 	AI(Difficulty intel, Board *b);
 	//Get's the move
 	Coordinate GetMove();
+	void TakeMoveResult(MoveResult mr);
 	GameResult GetResult();
 	void PlacePieces();
 private:
