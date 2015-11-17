@@ -5,24 +5,38 @@ AI::AI() {
 
 }
 
+
+
 AI::AI(Difficulty intel, Board *b) {
 	aiIntel = intel;
-	AIBoard = b;
 }
 
 Coordinate AI::GetMove() {
-	/*if (aiIntel == Easy) {
-		EasyAI();
+	if (aiIntel == Easy) {
+		return EasyAI();
 	}
 	else if (aiIntel == Medium) {
-		MediumAI();
+		return MediumAI();
 	}
 	else {
-		AdvanceAI();
-	}*/
+		return AdvanceAI();
+	}
 	return Coordinate{ 0,0 };
 }
 
 void AI::PlacePieces() {
 	
 }
+#pragma region AILogic
+Coordinate AI::EasyAI() {
+	return Coordinate{ 0,0 };
+}
+
+Coordinate AI::MediumAI() {
+	return Coordinate{ 0,0 };
+}
+
+Coordinate AI::AdvanceAI() {
+	return Coordinate{ 0,0 };
+}
+#pragma endregion

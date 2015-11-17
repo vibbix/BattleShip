@@ -25,8 +25,7 @@ public:
 	//Play Game
 	GameResult PlayGame();
 private:
-	Board *UserBoard;
-	Board *AIBoard;
+	AI OpponentAI;
 	Game CurrentGame;
 };
 void SetColor(short num, short text, short backround);

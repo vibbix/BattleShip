@@ -80,6 +80,8 @@ struct Board {
 	vector<Coordinate> *Hits; 
 	//Add's a hit
 	void AddHit(Coordinate hit);
+	//Clears the board
+	void ClearBoard();
 	//Tell's you if the coordinate has already been hit
 	bool IsHit(Coordinate hit);
 	//Get's the the GameState of the board
