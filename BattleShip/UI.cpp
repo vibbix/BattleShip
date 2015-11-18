@@ -8,6 +8,7 @@
 
 void UI::DisplayTitleScreen() {
 	WINDOW* wnd = initscr();
+	curs_set(0);
 	//checking for colors
 	if (has_colors() == FALSE)
 	{
@@ -43,6 +44,7 @@ int UI::StartMenu() {
 	bool PlayGame = false;
 	int current = 0;
 	WINDOW* wnd = initscr();
+	curs_set(0);
 	keypad(wnd, TRUE);
 	mvwprintw(wnd, 5, 18, "   ___       _   _   _      __ _     _       ");
 	mvwprintw(wnd, 6, 18, "  / __\\ __ _| |_| |_| | ___/ _\\ |__ (_)_ __  ");
@@ -162,27 +164,35 @@ void UI::PlacePieces(Board *b) {
 	//navigate piece placement using arrow keys
 	//Select 'W' & 'S' to select which ship you want to select
 	//user 'Q' & 'E' to rotate the ship CCW & CW
-	//Select delete over a selected ship to remove it from the board
+	//Select delete over a selected ship to remove it from the 
+	WINDOW *mwnd = initscr();
 	if (!b->BoardisValid()) {
 		b->ClearBoard();
 	}
-	initscr();
-	WINDOW *winboard = newwin(12,12, 2, 2);
-	WINDOW *wnd = newwin(20, 20, 2, 20);
+	//new win(int height, int width, int starty, int startx)
+	SetColor(2, COLOR_BLUE, COLOR_BLACK);
+	//gameboard
+	WINDOW *winboard = subwin(mwnd, 23,24, 1, 1);
+	//selection * instructions
+	WINDOW *wnd = subwin(mwnd, 25, 52, 0, 25);
 	wborder(winboard, '|', '|', '-', '-', '+', '+', '+', '+');
-	cbreak();
+	noecho();
+	//cbreak();
+	curs_set(0);
 	keypad(stdscr, TRUE);
 	while (true) {
 		//render current view
 		SetColor(2, COLOR_BLUE, COLOR_BLACK);
 		//draw backround of battle square
-		mvwprintw(winboard, 1, 1, "ABCDEFGHIJ");
-		for (int i = 0; i < 10; i++) {
-			string gletter = std::to_string(i);
+		mvwprintw(winboard, 1, 3, " A B C D E F G H I J");
+		for (int i = 0; i < 22; i+=2) {
+			string gletter = std::to_string(i/2);
 			SetColor(2, COLOR_BLUE, COLOR_BLACK);
-			mvwprintw(winboard, i + 1, 1, "0000000");
-			SetColor(1, COLOR_WHITE, COLOR_BLACK);
-			mvwprintw(winboard, 1, i, gletter.c_str());
+			mvwprintw(winboard, i + 3, 3, " 0 0 0 0 0 0 0 0 0 0");
+			SetColor(2, COLOR_BLUE, COLOR_BLACK);
+			if (i % 2 == 0) {
+				mvwprintw(winboard, i + 1, 1, gletter.c_str());
+			}
 		}
 		//Draw ships
 		SetColor(3, COLOR_RED, COLOR_BLACK);
@@ -195,21 +205,29 @@ void UI::PlacePieces(Board *b) {
 			delete ls;
 		}
 		//Print ship names
-		SetColor(1, COLOR_WHITE, COLOR_BLACK);
-		mvwprintw(wnd, 5, 10, "Aircraft Carrier");
-		mvwprintw(wnd, 6, 15, "XXXXX");
-		mvwprintw(wnd, 8, 10, "BattleShip");
-		mvwprintw(wnd, 9, 14, "XXXX");
-		mvwprintw(wnd, 11, 10, "Submarine");
-		mvwprintw(wnd, 12, 14, "XXX");
-		mvwprintw(wnd, 14, 10, "Cruiser");
-		mvwprintw(wnd, 15, 14, "XXX");
-		mvwprintw(wnd, 17, 10, "Destroyer");
-		mvwprintw(wnd, 18, 14, "XX");
-		wrefresh(winboard);
-		wrefresh(wnd);
+		mvwprintw(wnd, 1, 15, "Aircraft Carrier");
+		mvwprintw(wnd, 2, 20, "XXXXX");
+		mvwprintw(wnd, 4, 18, "BattleShip");
+		mvwprintw(wnd, 5, 21, "XXXX");
+		mvwprintw(wnd, 7, 18, "Submarine");
+		mvwprintw(wnd, 8, 21, "XXX");
+		mvwprintw(wnd, 10, 19, "Cruiser");
+		mvwprintw(wnd, 11, 21, "XXX");
+		mvwprintw(wnd, 13, 18, "Destroyer");
+		mvwprintw(wnd, 14, 22, "XX");
+		//Instructions
+		mvwprintw(wnd, 16, 6, "Navigate piece placement using arrow keys");
+		mvwprintw(wnd, 17, 10, "Use 'W' & 'S' to select the ship");
+		mvwprintw(wnd, 18, 3, "Use 'Q' & 'E' to rotate the ship CCW & CW");
+		mvwprintw(wnd, 19, 1, "Press 'Del' over a ship to remove it from the grid");
+		mvwprintw(wnd, 20, 9, "Press enter to add ship/proceed");
+		//wrefresh(winboard);
+		//wrefresh(wnd);
 		char x = getch();
-		x++;
+		//what to print
+		//Cursor
+		//place checkmark next to selected ships
+
 	}
 	endwin();
 }

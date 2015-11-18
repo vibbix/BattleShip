@@ -35,3 +35,5 @@ private:
 };
 void SetColor(short num, short text, short backround);
 void SetColor(short num);
+void SetColor(WINDOW* win, short num, short text, short backround);
+void SetColor(WINDOW* win, short num);
