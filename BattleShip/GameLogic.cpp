@@ -14,20 +14,24 @@ void Game::Delete() {
 	P1Hits.clear();
 	P2Hits.clear();
 }
+//Implement core game loop here
 GameResult Game::PlayGame() {
 
+	return Win;
 }
-Board *Game::GetP1Board() {
+Board* Game::GetP1Board() {
 	return P1Board;
 }
 
-Board *Game::GetP1Board() {
+Board* Game::GetP2Board() {
 	return P2Board;
 }
 
 #pragma endregion
 
 #pragma region PlayerCode
+Player::Player() {}
+
 void Player::setPlayerBoard(Board *pb) {
 	PlayerBoard = pb;
 }

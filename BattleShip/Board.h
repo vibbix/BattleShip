@@ -4,8 +4,24 @@
 #include <vector>
 #include <cstring>
 
+
 #pragma message ("Board object, piece & coordinate struct are defined.")
 using namespace std;
+//The result of the game
+enum GameResult {
+	Win,
+	Lose,
+	InProgress
+};
+//the result
+enum MoveResult {
+	Hit,
+	Miss,
+	InvalidMove,
+	MoveRequest,
+	Quit
+};
+
 //Piece orientation
 enum Orientation {
 	//Piece is straight up... i.e. [0,0], [0,1], [0,2]
@@ -26,7 +42,6 @@ enum PieceMovement {
 	Clockwise = 1 << 4,
 	CounterClockwise = 1 << 5
 };
-
 //Type of piece
 enum PieceType {
 	//A single 1x5 unit, Radiation level .5
@@ -40,7 +55,6 @@ enum PieceType {
 	//A single 1x2 unit, radiation level .25
 	Destroyer
 };
-
 //Get's the length of a gamepiece
 int getPieceLength(PieceType pt);
 struct Coordinate {
@@ -95,7 +109,7 @@ struct Board {
 	/*Add's a hit*/
 	void AddHit(Coordinate hit);
 	/*Tell's you if the coordinate has already been hit*/
-	MoveResult IsHit(Coordinate hit);
+	MoveResult isHit(Coordinate hit);
 	/*Get's the the GameState of the board*/
 	GameResult BoardResult();
 	/*Get's the piece at coordinate, if exists*/

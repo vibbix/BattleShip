@@ -14,6 +14,7 @@
 class UI {
 public:
 	UI();
+	UI(UI &&){}
 	//Starts the UI Thread
 	void StartUI();
 	//Starts the title screen
@@ -30,6 +31,7 @@ private:
 	Board *UserBoard;
 	Board *AIBoard;
 	Game CurrentGame;
+	int game;
 };
 void SetColor(short num, short text, short backround);
 void SetColor(short num);

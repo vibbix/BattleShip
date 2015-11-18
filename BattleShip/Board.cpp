@@ -14,7 +14,7 @@ void Board::AddHit(Coordinate hit) {
 	Hits.push_back(hit);
 }
 
-MoveResult Board::IsHit(Coordinate hit) {
+MoveResult Board::isHit(Coordinate hit) {
 	if (hit.x < 0 || hit.x > 9 || hit.y < 0 || hit.y > 9) {
 		return InvalidMove;
 	}
@@ -27,21 +27,21 @@ MoveResult Board::IsHit(Coordinate hit) {
 	
 	return Miss;
 }
-
+//FINISH THIS
 GameResult Board::BoardResult() {
 	//Get all possible occupied space
 	int available[10][10];
 	Coordinate *ls;
 	//Get's all pieces
 	for (auto pc : BoardPieces) {
-		ls = pc.GetOccupiedSpace;
+		ls = pc.GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			available[ls[i].x][ls[i].y] -= 1;
 		}
 		delete ls;
 	}
 	//get's all hits
-
+	return InProgress;
 }
 
 bool Board::ValidPieceSpot(Piece loc) {
@@ -51,7 +51,7 @@ bool Board::ValidPieceSpot(Piece loc) {
 	int available[10][10];
 	bool check = GetAvailabilityGrid(available);
 	if (check == false) {
-		delete available;
+		//delete available;
 		return false;
 	}
 	Coordinate *ls;
@@ -72,7 +72,7 @@ bool Board::ValidPieceSpot(Piece loc) {
 	for (int i = 0; i < getPieceLength(loc.Type); i++) {
 		if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
 			delete ls;
-			delete available;
+			//delete available;
 			return false;
 		}
 		available[ls[i].x][ls[i].y] -= 1;
@@ -189,7 +189,7 @@ Piece *Board::GetPieceAtCoordinate(Coordinate c) {
 	Coordinate *ls;
 	//Get's all pieces
 	for (auto pc : BoardPieces) {
-		ls = &pc.GetOccupiedSpace;
+		ls = pc.GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			if (ls[i].x == c.x && ls[i].y == c.y) {
 				delete ls;
@@ -202,10 +202,16 @@ Piece *Board::GetPieceAtCoordinate(Coordinate c) {
 }
 //MAKE SURE THIS THINGS WORKS!!!!!!!
 bool Board::GetAvailabilityGrid(int(&grid)[10][10]) {
+	//normalize grid
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			grid[i][j] = 0;
+		}
+	}
 	Coordinate *ls;
 	//Get's all pieces
 	for (auto pc : BoardPieces) {
-		ls = pc.GetOccupiedSpace;
+		ls = pc.GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
 				delete ls;

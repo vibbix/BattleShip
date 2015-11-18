@@ -1,8 +1,11 @@
 #include "curses.h"
 #include "UI.h"
+#include "GameLogic.h"
 
 
 #pragma region MenuCode
+
+
 void UI::DisplayTitleScreen() {
 	WINDOW* wnd = initscr();
 	//checking for colors
@@ -131,7 +134,10 @@ Difficulty UI::SelectDifficulty() {
 	}
 }
 
-UI::UI() {}
+UI::UI()
+{
+	game = 0;
+}
 
 void UI::StartUI() {
 	DisplayTitleScreen();
@@ -141,13 +147,13 @@ void UI::StartUI() {
 		return;
 	}
 	Difficulty aidiff = SelectDifficulty();
-	CurrentGame = Game();
+	//CurrentGame = Game();
 	PlacePieces(CurrentGame.GetP1Board());
 	return;
 }
-
+//Finish later
 GameResult UI::PlayGame() {
-
+	return InProgress;
 }
 
 
@@ -160,11 +166,10 @@ void UI::PlacePieces(Board *b) {
 	if (!b->BoardisValid()) {
 		b->ClearBoard();
 	}
-	WINDOW* wnd = initscr();
-	WINDOW *winboard;
-	winboard = newwin(12,12, 2, 2);
-	wborder(winboard, '|', '|', '-', '-', '+', '+', '+', '+');
 	initscr();
+	WINDOW *winboard = newwin(12,12, 2, 2);
+	WINDOW *wnd = newwin(20, 20, 2, 20);
+	wborder(winboard, '|', '|', '-', '-', '+', '+', '+', '+');
 	cbreak();
 	keypad(stdscr, TRUE);
 	while (true) {
@@ -191,18 +196,22 @@ void UI::PlacePieces(Board *b) {
 		}
 		//Print ship names
 		SetColor(1, COLOR_WHITE, COLOR_BLACK);
-		mvwprintw(wnd, 5, 20, "Aircraft Carrier");
-		mvwprintw(wnd, 6, 25, "XXXXX");
-		mvwprintw(wnd, 8, 20, "BattleShip");
-		mvwprintw(wnd, 9, 24, "XXXX");
-		mvwprintw(wnd, 11, 20, "Submarine");
-		mvwprintw(wnd, 12, 24, "XXX");
-		mvwprintw(wnd, 14, 20, "Cruiser");
-		mvwprintw(wnd, 15, 24, "XXX");
-		mvwprintw(wnd, 17, 20, "Destroyer");
-		mvwprintw(wnd, 18, 24, "XX");
-		
+		mvwprintw(wnd, 5, 10, "Aircraft Carrier");
+		mvwprintw(wnd, 6, 15, "XXXXX");
+		mvwprintw(wnd, 8, 10, "BattleShip");
+		mvwprintw(wnd, 9, 14, "XXXX");
+		mvwprintw(wnd, 11, 10, "Submarine");
+		mvwprintw(wnd, 12, 14, "XXX");
+		mvwprintw(wnd, 14, 10, "Cruiser");
+		mvwprintw(wnd, 15, 14, "XXX");
+		mvwprintw(wnd, 17, 10, "Destroyer");
+		mvwprintw(wnd, 18, 14, "XX");
+		wrefresh(winboard);
+		wrefresh(wnd);
+		char x = getch();
+		x++;
 	}
+	endwin();
 }
 #pragma endregion
 

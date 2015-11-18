@@ -5,18 +5,7 @@
 
 #pragma message ("Game & player objects are defined")
 using namespace std;
-enum GameResult {
-	Win,
-	Lose,
-	InProgress
-};
-enum MoveResult {
-	Hit,
-	Miss,
-	InvalidMove,
-	MoveRequest,
-	Quit
-};
+
 //Core Game Logic
 class Game {
 public:
@@ -24,14 +13,19 @@ public:
 	/*Actions*/
 	//Initializes the game, UI, AI, etc.
 	Game();
+	//Fix's weird deleted fucntion error
+	//Game(Game &&) {}
+	//Game(const Game&) = default;
+	Game(const Game&) = default;
+	Game& operator=(const Game&) = default;
 	//Get's the game result from the perspective of player 1
 	GameResult PlayGame();
 	//Deletes all game instance information.
 	void Delete();
 	//Get P1 board
-	Board *GetP1Board();
+	Board* GetP1Board();
 	//Get P2 board
-	Board *GetP2Board();
+	Board* GetP2Board();
 private:
 	Board *P1Board;
 	Board *P2Board;

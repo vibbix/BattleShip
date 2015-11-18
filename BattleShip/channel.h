@@ -1,6 +1,7 @@
 //http://st.xorian.net/blog/2012/08/go-style-channel-in-c/
 #include <list>
 #include <thread>
+#include <mutex>
 #pragma message ("Channel is defined")
 using namespace std;
 template<class item>
