@@ -1,6 +1,7 @@
 #pragma once
 #include "GameLogic.h"
 #include "AI.h"
+#include "curses.h"
 
 #pragma message ("UI object is defined")
 /*Implements the UI
@@ -33,7 +34,7 @@ private:
 	Game CurrentGame;
 	int game;
 };
-void SetColor(short num, short text, short backround);
+void SetColor(short num, short text, short backround, bool isInit=true);
 void SetColor(short num);
-void SetColor(WINDOW* win, short num, short text, short backround);
+void SetColor(WINDOW* win, short num, short text, short backround, bool isInit = true);
 void SetColor(WINDOW* win, short num);

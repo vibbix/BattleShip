@@ -18,7 +18,7 @@ MoveResult Board::isHit(Coordinate hit) {
 	if (hit.x < 0 || hit.x > 9 || hit.y < 0 || hit.y > 9) {
 		return InvalidMove;
 	}
-	for (int i = 0; i < Hits.size(); i++) {
+	for (uint8_t i = 0; i < Hits.size(); i++) {
 		Coordinate coord = Hits.at(i);
 		if (coord.x == hit.x && coord.y == hit.y) {
 			return Hit;
@@ -55,7 +55,7 @@ bool Board::ValidPieceSpot(Piece loc) {
 		return false;
 	}
 	Coordinate *ls;
-	////Get's all pieces
+	//Get's all pieces
 	//for (auto pc : BoardPieces) {
 	//	ls = pc.GetOccupiedSpace;
 	//	for (int i = 0; i < getPieceLength(pc.Type); i++) {
@@ -70,85 +70,109 @@ bool Board::ValidPieceSpot(Piece loc) {
 	ls = loc.GetOccupiedSpace();
 	//check if each occupied space is valid
 	for (int i = 0; i < getPieceLength(loc.Type); i++) {
+		//if out of bounds instantly false
 		if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
 			delete ls;
-			//delete available;
 			return false;
 		}
-		available[ls[i].x][ls[i].y] -= 1;
+		//if spot is already taken, return false
+		if (available[ls[i].x][ls[i].y] != 0) {
+			delete ls;
+			return false;
+		}
 	}
-
+	return true;
 }
 
 void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 	int ox = loc->CenterAxis.x, oy = loc->CenterAxis.y;
+	Orientation orig= loc->orientation;
 	Coordinate *ls;
 	ls = loc->GetOccupiedSpace();
 	int available[10][10];
 	bool check = GetAvailabilityGrid(available);
+	//loop until good place found, or until no longer in bounds
 	while (loc->CenterAxis.x >= 0 && loc->CenterAxis.x <= 9 && loc->CenterAxis.y >= 0 && loc->CenterAxis.y <= 9) {
-		bool test = true;
+		bool isValid = true;
 		switch (pm)
 		{
 		case Left:
 			loc->shiftLeft();
+			break;
 		case Right:
 			loc->shiftRight();
+			break;
 		case Up:
 			loc->shiftUp();
+			break;
 		case Down:
 			loc->shiftDown();
+			break;
 		case Clockwise:
 			loc->rotateRight();
+			break;
 		case CounterClockwise:
 			loc->rotateLeft();
+			break;
 		default:
+			//don't wanna be stuck in an infinite loop if a bad parameter is passed
+			loc->rotateLeft();
 			break;
 		}
-		//Checks piece's occupied space if valid
 		for (int i = 0; i < getPieceLength(loc->Type); i++) {
+			//tests if each occupied space is valid
 			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
-				test = false;
+				isValid = false;
 				break;
+			//checks if space is already in the way
 			} else if (available[ls[i].x][ls[i].y] == -1) {
-				test = false;
+				isValid = false;
 				break;
 			}
 		}
-		if (test) {
+		if (isValid) {
+			delete ls;
 			return;
 		}
 	}
-	//int yinc = 0, xinc = 0, cx = 0, cy = 0;
-	//int piecesize = getPieceLength(loc->Type);
-	/*switch (loc->Type)
-	{
-	case ZeroDegrees:
-		yinc = 1;
-	case NinetyDegrees:
-		xinc = 1;
-	case OneHundredEightyDegrees:
-		yinc = -1;
-	case TwoHundredSeventyDegrees:
-		xinc = -1;
-	default:
-		break;
-	}*/
-	////turn available into grid of available slots
-	//for (int i = 0; i < 10; i++) {//i -> x or rows
-	//	for (int j = 0; j < 10; j++) { //j -> y or columns
-	//		for (int step = 0; step < piecesize; step++) {
-	//			//check if spot exists at the current iteration of the spot
-	//			if ((i+(step*xinc)) < 0 || (i + (step*xinc)) > 9 || (j + (step*yinc)) < 0 || (j + (step*yinc)) > 9) {
-	//				available[i][j] = 1; //1 means that the current spot cannot be used, but is fine to pass through
-	//				break;
-	//			}
-
-	//			//check if something else is on the spot
-	//		}
-	//	}
-	//}
-	
+	//check original position to see if it works
+	bool isValid = true;
+	loc->CenterAxis.x = ox;
+	loc->CenterAxis.y = oy;
+	loc->orientation = orig;
+	for (int i = 0; i < getPieceLength(loc->Type); i++) {
+		if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
+			isValid = false;
+			break;
+		} else if (available[ls[i].x][ls[i].y] == -1) {
+			isValid = false;
+			break;
+		}
+	}
+	if (isValid) {
+		delete ls;
+		return;
+	}
+	//expand out until space is found
+	delete ls;
+	while (!isValid) {
+		int newx = rand() % 10;//0 to 9
+		int newy = rand() % 10;//0 to 9
+		if (newx < 0 || newx > 9 || newy < 0 || newy > 9) {
+			break;
+		}
+		loc->CenterAxis.x = newx;
+		loc->CenterAxis.y = newy;
+		ls = loc->GetOccupiedSpace();
+		for (int i = 0; i < getPieceLength(loc->Type); i++) {
+			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
+				break;
+			}
+			else if (available[ls[i].x][ls[i].y] == -1) {
+				break;
+			}
+		}
+	}
 }
 
 bool Board::BoardisValid(){
@@ -188,12 +212,14 @@ Piece *Board::GetPieceAtCoordinate(Coordinate c) {
 	}
 	Coordinate *ls;
 	//Get's all pieces
-	for (auto pc : BoardPieces) {
+	//for (auto pc : BoardPieces) {
+	for (uint8_t i = 0; i < BoardPieces.size(); i++){
+		Piece pc = BoardPieces.at(i);
 		ls = pc.GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			if (ls[i].x == c.x && ls[i].y == c.y) {
 				delete ls;
-				return &pc;
+				return &BoardPieces[i];
 			}
 		}
 		delete ls;
@@ -304,18 +330,21 @@ Coordinate *Piece::GetOccupiedSpace() {
 	int cx = 0;
 	int cy = 0;
 	Coordinate *space = new Coordinate[len];
-
 	//create shift values
 	switch (orientation)
 	{
 	case ZeroDegrees:
 		yinc = 1;
+		break;
 	case NinetyDegrees:
 		xinc = 1;
+		break;
 	case OneHundredEightyDegrees:
 		yinc = -1;
+		break;
 	case TwoHundredSeventyDegrees:
 		xinc = -1;
+		break;
 	default:
 		break;
 	}
