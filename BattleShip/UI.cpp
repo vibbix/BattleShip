@@ -1,19 +1,7 @@
 #include "curses.h"
 #include "UI.h"
 
-UI::UI() {}
 
-void UI::StartUI() {
-	DisplayTitleScreen();
-	int result = StartMenu();
-	//Means quit game
-	if (result == 1) {
-		return;
-	}
-	Difficulty aidiff = SelectDifficulty();
-	CurrentGame = Game(aidiff);
-	return;
-}
 #pragma region MenuCode
 void UI::DisplayTitleScreen() {
 	WINDOW* wnd = initscr();
@@ -140,6 +128,80 @@ Difficulty UI::SelectDifficulty() {
 			endwin();
 			return static_cast<Difficulty>(selected);
 		}
+	}
+}
+
+UI::UI() {}
+
+void UI::StartUI() {
+	DisplayTitleScreen();
+	int result = StartMenu();
+	//Means quit game
+	if (result == 1) {
+		return;
+	}
+	Difficulty aidiff = SelectDifficulty();
+	CurrentGame = Game();
+	PlacePieces(CurrentGame.GetP1Board());
+	return;
+}
+
+GameResult UI::PlayGame() {
+
+}
+
+
+void UI::PlacePieces(Board *b) {
+	//Create windows
+	//navigate piece placement using arrow keys
+	//Select 'W' & 'S' to select which ship you want to select
+	//user 'Q' & 'E' to rotate the ship CCW & CW
+	//Select delete over a selected ship to remove it from the board
+	if (!b->BoardisValid()) {
+		b->ClearBoard();
+	}
+	WINDOW* wnd = initscr();
+	WINDOW *winboard;
+	winboard = newwin(12,12, 2, 2);
+	wborder(winboard, '|', '|', '-', '-', '+', '+', '+', '+');
+	initscr();
+	cbreak();
+	keypad(stdscr, TRUE);
+	while (true) {
+		//render current view
+		SetColor(2, COLOR_BLUE, COLOR_BLACK);
+		//draw backround of battle square
+		mvwprintw(winboard, 1, 1, "ABCDEFGHIJ");
+		for (int i = 0; i < 10; i++) {
+			string gletter = std::to_string(i);
+			SetColor(2, COLOR_BLUE, COLOR_BLACK);
+			mvwprintw(winboard, i + 1, 1, "0000000");
+			SetColor(1, COLOR_WHITE, COLOR_BLACK);
+			mvwprintw(winboard, 1, i, gletter.c_str());
+		}
+		//Draw ships
+		SetColor(3, COLOR_RED, COLOR_BLACK);
+		for (auto ship : b->BoardPieces) {
+			Coordinate *ls;
+			ls = ship.GetOccupiedSpace();
+			for (int i = 0; i < getPieceLength(ship.Type); i++) {
+				mvwprintw(winboard, ls[i].x, ls[i].y, "X");
+			}
+			delete ls;
+		}
+		//Print ship names
+		SetColor(1, COLOR_WHITE, COLOR_BLACK);
+		mvwprintw(wnd, 5, 20, "Aircraft Carrier");
+		mvwprintw(wnd, 6, 25, "XXXXX");
+		mvwprintw(wnd, 8, 20, "BattleShip");
+		mvwprintw(wnd, 9, 24, "XXXX");
+		mvwprintw(wnd, 11, 20, "Submarine");
+		mvwprintw(wnd, 12, 24, "XXX");
+		mvwprintw(wnd, 14, 20, "Cruiser");
+		mvwprintw(wnd, 15, 24, "XXX");
+		mvwprintw(wnd, 17, 20, "Destroyer");
+		mvwprintw(wnd, 18, 24, "XX");
+		
 	}
 }
 #pragma endregion

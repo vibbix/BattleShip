@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <cstring>
+
+#pragma message ("Board object, piece & coordinate struct are defined.")
 using namespace std;
 //Piece orientation
 enum Orientation {
@@ -15,6 +17,17 @@ enum Orientation {
 	//Piece is left of its center... i.e. [0,0], [-1,0], [-2, 0]
 	TwoHundredSeventyDegrees
 };
+//movement of pieces for piece placement
+enum PieceMovement {
+	Left = 1 << 0,
+	Right = 1 << 1,
+	Up = 1 << 2,
+	Down = 1 << 3,
+	Clockwise = 1 << 4,
+	CounterClockwise = 1 << 5
+};
+
+//Type of piece
 enum PieceType {
 	//A single 1x5 unit, Radiation level .5
 	AircraftCarrier,
@@ -27,6 +40,7 @@ enum PieceType {
 	//A single 1x2 unit, radiation level .25
 	Destroyer
 };
+
 //Get's the length of a gamepiece
 int getPieceLength(PieceType pt);
 struct Coordinate {
@@ -72,23 +86,30 @@ struct Piece {
 };
 //A ten by ten array of pieces
 struct Board {
-	//Default construcutor
+	/*Default construcutor*/
 	Board();
-	//Intializes the Board
+	/*Intializes the Board*/
 	vector<Piece> BoardPieces;
-	//The collection of hits on this board
-	vector<Coordinate> *Hits; 
-	//Add's a hit
+	/*The collection of hits on this board*/
+	vector<Coordinate> Hits; 
+	/*Add's a hit*/
 	void AddHit(Coordinate hit);
-	//Tell's you if the coordinate has already been hit
-	bool IsHit(Coordinate hit);
-	//Get's the the GameState of the board
+	/*Tell's you if the coordinate has already been hit*/
+	MoveResult IsHit(Coordinate hit);
+	/*Get's the the GameState of the board*/
 	GameResult BoardResult();
-	//Valid place to put piece
+	/*Get's the piece at coordinate, if exists*/
+	Piece *GetPieceAtCoordinate(Coordinate c);
+	/*Valid place to put piece*/
 	bool ValidPieceSpot(Piece loc);
-	//Next valid spot to put piece
-	void NextValidPieceSpot(Piece *loc, bool isVertical, bool isRotating);
-	//Deletes all instance data
+	/*Next valid spot to put piece*/
+	void NextValidPieceSpot(Piece *loc, PieceMovement pm);
+	/*Validates if board is Allset*/
+	bool BoardisValid();
+	/*Get's the availability grid, used for various functions*/
+	bool GetAvailabilityGrid(int (&grid)[10][10]);
+	/*Clears the board*/
+	void ClearBoard();
+	/*Deletes all instance data*/
 	void Delete();
 };
-

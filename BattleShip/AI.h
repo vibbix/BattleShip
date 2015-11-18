@@ -1,6 +1,7 @@
 #pragma once
-#include "Board.h"
 #include "GameLogic.h"
+#include "Board.h"
+#pragma message ("AI object is defined")
 //Game Difficulty
 enum Difficulty {
 	//Just random hits
@@ -14,11 +15,8 @@ class AI : public Player {
 public:
 	AI();
 	//Creates the AI instance
-	AI(Difficulty intel, Board *b);
+	AI(Difficulty intel);
 	//
-	Coordinate GetMove();
-	MoveResult GetMoveResult(Coordinate c);
-	GameResult GetResult();
 	void PlacePieces();
 private:
 	/* http://www.datagenetics.com/blog/december32011/ */

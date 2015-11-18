@@ -1,7 +1,9 @@
 #pragma once
 #include "Board.h"
-#include "AI.h"
 #include <vector>
+#include "channel.h"
+
+#pragma message ("Game & player objects are defined")
 using namespace std;
 enum GameResult {
 	Win,
@@ -10,24 +12,26 @@ enum GameResult {
 };
 enum MoveResult {
 	Hit,
-	Miss
+	Miss,
+	InvalidMove,
+	MoveRequest,
+	Quit
 };
 //Core Game Logic
 class Game {
 public:
-	Game();
 	//Place pieces
 	/*Actions*/
 	//Initializes the game, UI, AI, etc.
-	Game(Difficulty AIDifficulty);
-	//Deletes all game instance information.
-	void Delete();
-	//Get's player 1's board
-	Board *GetP1Board();
-	//Get's player 2's board
-	Board *GetP2Board();
+	Game();
 	//Get's the game result from the perspective of player 1
 	GameResult PlayGame();
+	//Deletes all game instance information.
+	void Delete();
+	//Get P1 board
+	Board *GetP1Board();
+	//Get P2 board
+	Board *GetP2Board();
 private:
 	Board *P1Board;
 	Board *P2Board;
@@ -35,22 +39,29 @@ private:
 	vector<Coordinate> P1Hits;
 	//Hit's made by P2 to P1
 	vector<Coordinate> P2Hits;
-	//Core game AI
-	AI gameAI;
+	//channels for players
+	Channel<MoveResult> p1chanin, p2chanin;
+	Channel<Coordinate> p1chanout, p2chanout;
 };
 
 //Player Interface
 class Player {
 public:
-	//Game object uses this to get the move for the player
-	virtual Coordinate GetMove() = 0;
-	//Get's the move result from GetMove()
-	virtual MoveResult GetMoveResult(Coordinate c) = 0;
-	//Get's the result from the perspective of the player
-	virtual GameResult GetResult() = 0;
+	Player();
+	//Thread indepedent game loop
+	void StartGameLoop(Channel<MoveResult> chanin, Channel<Coordinate> chanout);
+	//Place Pieces on board, verifies all is good
+	virtual void PlacePieces() = 0;
+	virtual Coordinate MakeMove() = 0;
+	virtual void ProcessMove(MoveResult) = 0;
+	//Set's the players board
 	void setPlayerBoard(Board *pb);
+	//Set's the hit vectors up
 	void setHits(vector<Coordinate> *oh, vector<Coordinate> *ph);
+	//Set channels
+	void setChannels(Channel<MoveResult> cin, Channel<Coordinate> cout);
 protected:
+	//This Player's board
 	Board *PlayerBoard;
 	//Hit's made by this player to the opponent
 	vector<Coordinate> *opponentHits;

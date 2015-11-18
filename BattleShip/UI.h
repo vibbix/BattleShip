@@ -1,6 +1,8 @@
 #pragma once
-#include "AI.h"
 #include "GameLogic.h"
+#include "AI.h"
+
+#pragma message ("UI object is defined")
 /*Implements the UI
 -board display
 -main menu
@@ -21,7 +23,7 @@ public:
 	//Select the difficulty
 	Difficulty SelectDifficulty();
 	//Places pieces for player board
-	Board *PlacePieces();
+	void PlacePieces(Board *b);
 	//Play Game
 	GameResult PlayGame();
 private:

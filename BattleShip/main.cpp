@@ -1,7 +1,6 @@
-#include <curses.h>
-#include <panel.h>
 #include "UI.h"
-//Game loop implemented here
+#pragma message ("Main Class created")
+//Starts the UI
 int main() {
 	UI gameui = UI();
 	gameui.StartUI();
