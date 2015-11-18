@@ -232,10 +232,34 @@ void UI::PlacePieces(Board *b) {
 		wrefresh(winboard);
 		wrefresh(wnd);
 		char x = getch();
-
 		//what to print
 		//Cursor
 		//place checkmark next to selected ships
+		switch (selected)
+		{
+		//aircraft carrier
+		case 0:
+			//if already placed
+				//render the ship using "yellow" hit markers
+				//return
+			//if the current piece isn't this type, make it so
+				//find a valid spot for it
+			break;
+		//Battleship
+		case 1:
+			break;
+		//Submarine
+		case 2:
+			break;
+		//Cruiser
+		case 3:
+			break;
+		//Destroyer
+		case 4:
+			break;
+		default:
+			break;
+		}
 
 	}
 	endwin();

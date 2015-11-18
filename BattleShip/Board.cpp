@@ -153,8 +153,19 @@ void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 		delete ls;
 		return;
 	}
+	//apply transform once
+	switch (pm)
+	{
+	case Clockwise:
+		loc->rotateRight();
+		break;
+	case CounterClockwise:
+		loc->rotateLeft();
+		break;
+	default:
+		break;
+	}
 	//expand out until space is found
-	delete ls;
 	while (!isValid) {
 		int newx = rand() % 10;//0 to 9
 		int newy = rand() % 10;//0 to 9
@@ -163,6 +174,7 @@ void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 		}
 		loc->CenterAxis.x = newx;
 		loc->CenterAxis.y = newy;
+		delete ls;
 		ls = loc->GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(loc->Type); i++) {
 			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
@@ -172,7 +184,9 @@ void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 				break;
 			}
 		}
+		delete ls;
 	}
+	return;
 }
 
 bool Board::BoardisValid(){
