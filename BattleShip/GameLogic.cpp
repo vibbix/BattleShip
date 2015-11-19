@@ -34,11 +34,16 @@ GameResult Game::PlayGame() {
 	else if (!p1good && !p2good) {
 		return Lose;
 	}
+	//Give each player access to the boards & hits;
+	P1->setPlayerBoard(P1Board);
+	P1->setHits(&P2Board->Hits);
+	P2->setPlayerBoard(P2Board);
+	P2->setHits(&P1Board->Hits);
 	srand(time(NULL));
 	//determines which player goes first
 	int fplayer = rand() % 2;
-	std::thread p1thread(&Player::StartGameLoop, std::ref(*P1), p1chanin, p1chanout);
-	std::thread p2thread(&Player::StartGameLoop, std::ref(*P2), p2chanin, p2chanout);
+	std::thread p1thread(&Player::StartGameLoop, P1, &p1chanin, &p1chanout);
+	std::thread p2thread(&Player::StartGameLoop, P2, &p2chanin, &p2chanout);
 	while ((P1Board->BoardResult() == InProgress) && (P2Board->BoardResult() == InProgress)) {
 		//p1 is first
 		int start = fplayer;
@@ -134,13 +139,13 @@ void Player::setPlayerBoard(Board *pb) {
 	PlayerBoard = pb;
 }
 
-void Player::StartGameLoop(Channel<MoveResult> chanin, Channel<Coordinate> chanout) {
+void Player::StartGameLoop(Channel<MoveResult> *chanin, Channel<Coordinate> *chanout) {
 	MoveResult mr;
 	while (true) {
-		chanin.get(mr);
+		chanin->get(mr);
 		while (mr == MoveRequest || mr == InvalidMove) {
-			chanout.put(MakeMove());
-			chanin.get(mr);
+			chanout->put(MakeMove());
+			chanin->get(mr);
 		}
 		if (mr == Quit) {
 			break;
@@ -153,8 +158,7 @@ void Player::StartGameLoop(Channel<MoveResult> chanin, Channel<Coordinate> chano
 	return;
 }
 
-void Player::setHits(vector<Coordinate> *oh, vector<Coordinate> *ph) {
+void Player::setHits(vector<Coordinate> *oh) {
 	opponentHits = oh;
-	playerHits = ph;
 }
 #pragma endregion

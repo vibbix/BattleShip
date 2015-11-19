@@ -11,7 +11,7 @@ class Player {
 public:
 	Player();
 	//Thread indepedent game loop
-	void StartGameLoop(Channel<MoveResult> chanin, Channel<Coordinate> chanout);
+	void StartGameLoop(Channel<MoveResult> *chanin, Channel<Coordinate> *chanout);
 	//Place Pieces on board, verifies all is good
 	virtual void PlacePieces() = 0;
 	virtual Coordinate MakeMove() = 0;
@@ -19,7 +19,7 @@ public:
 	//Set's the players board
 	void setPlayerBoard(Board *pb);
 	//Set's the hit vectors up
-	void setHits(vector<Coordinate> *oh, vector<Coordinate> *ph);
+	void setHits(vector<Coordinate> *oh);
 	//Set channels
 	//void setChannels(Channel<MoveResult> cin, Channel<Coordinate> cout);
 protected:
@@ -27,8 +27,6 @@ protected:
 	Board *PlayerBoard;
 	//Hit's on opponents board
 	vector<Coordinate> *opponentHits;
-	//Hit's on Players board
-	vector<Coordinate> *playerHits;
 };
 
 //Core Game Logic
