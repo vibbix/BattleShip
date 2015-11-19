@@ -24,8 +24,8 @@ public:
 	int StartMenu();
 	//Select the difficulty
 	Difficulty SelectDifficulty();
-	//Places pieces for player board
-	void PlacePieces(Board *b);
+	//Places pieces for player board, 0 for stop, 1 for continue
+	int PlacePieces(Board *b);
 	//Play Game
 	GameResult PlayGame();
 private:
@@ -34,6 +34,8 @@ private:
 	Game CurrentGame;
 	int game;
 };
+bool ConfirmDialog(char* text);
+
 void SetColor(short num, short text, short backround, bool isInit=true);
 void SetColor(short num);
 void SetColor(WINDOW* win, short num, short text, short backround, bool isInit = true);

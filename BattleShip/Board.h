@@ -40,7 +40,8 @@ enum PieceMovement {
 	Up = 1 << 2,
 	Down = 1 << 3,
 	Clockwise = 1 << 4,
-	CounterClockwise = 1 << 5
+	CounterClockwise = 1 << 5,
+	ShipChange = 1 << 6
 };
 //Type of piece
 enum PieceType {
@@ -96,7 +97,7 @@ struct Piece {
 	//Rotates piece to the right
 	void rotateRight();
 	//Get's the position of each space the ship occupies
-	Coordinate *GetOccupiedSpace();
+	vector<Coordinate> GetOccupiedSpace();
 };
 //A ten by ten array of pieces
 struct Board {
@@ -124,6 +125,12 @@ struct Board {
 	bool GetAvailabilityGrid(int (&grid)[10][10]);
 	/*Clears the board*/
 	void ClearBoard();
+	/*Checks if piece already exists*/
+	bool IsPieceOnBoard(PieceType pt);
+	/*Deletes a piece from the board, if it exists*/
+	bool PopPieceFromBoard(PieceType pt);
+	/*Returns the index of the board piece*/
+	int GetPieceOnBoard(PieceType pt);
 	/*Deletes all instance data*/
-	void Delete();
+	//void Delete();
 };

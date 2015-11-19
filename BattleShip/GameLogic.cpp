@@ -16,7 +16,6 @@ void Game::Delete() {
 }
 //Implement core game loop here
 GameResult Game::PlayGame() {
-
 	return Win;
 }
 Board* Game::GetP1Board() {
@@ -26,9 +25,7 @@ Board* Game::GetP1Board() {
 Board* Game::GetP2Board() {
 	return P2Board;
 }
-
 #pragma endregion
-
 #pragma region PlayerCode
 Player::Player() {}
 
