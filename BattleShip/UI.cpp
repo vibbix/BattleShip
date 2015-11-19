@@ -195,6 +195,9 @@ int UI::PlacePieces(Board *b) {
 	tempship.orientation = ZeroDegrees;
 	tempship.isValid = true;
 	while (true) {
+		wclear(winboard);
+		wclear(wnd);
+		wborder(winboard, '|', '|', '-', '-', '+', '+', '+', '+');
 		//render current view
 		SetColor(winboard, 1);
 		//draw backround of battle square
@@ -213,12 +216,12 @@ int UI::PlacePieces(Board *b) {
 		//Draw ships
 		SetColor(winboard, 3);
 		for (auto ship : b->BoardPieces) {
-			vector<Coordinate> ls;
+			/*vector<Coordinate> ls;
 			ls = ship.GetOccupiedSpace();
 			for (int i = 0; i < getPieceLength(ship.Type); i++) {
 				mvwprintw(winboard, ls[i].x + 3, ls[i].y + 4, "X");
-			}
-			
+			}*/
+			RenderToGrid(winboard, ship);
 		}
 		//Print ship names
 		SetColor(wnd, (short)1, COLOR_WHITE, COLOR_BLACK);
@@ -240,12 +243,12 @@ int UI::PlacePieces(Board *b) {
 		mvwprintw(wnd, 16, 6, "Navigate piece placement using arrow keys");
 		mvwprintw(wnd, 17, 10, "Use 'W' & 'S' to select the ship");
 		mvwprintw(wnd, 18, 3, "Use 'Q' & 'E' to rotate the ship CCW & CW");
-		mvwprintw(wnd, 19, 1, "Press 'Del' over a ship to remove it from the grid");
+		mvwprintw(wnd, 19, 0, "Press 'backspace' to remove a selected ship");
 		mvwprintw(wnd, 20, 9, "Press enter to add ship/proceed");
-		refresh();
-		wrefresh(winboard);
-		wrefresh(wnd);
-		
+		//refresh();
+		//wrefresh(winboard);
+		//wrefresh(wnd);
+		//
 		//what to print
 		//Cursor
 		bool highlightship = false;
@@ -260,7 +263,7 @@ int UI::PlacePieces(Board *b) {
 		if (b->IsPieceOnBoard(cpt)) {
 			tempship.isValid = false;
 			highlightship = true;
-			break;
+			//break;
 		}
 		else if(tempship.Type != cpt) {
 			tempship.Type = cpt;
@@ -269,86 +272,89 @@ int UI::PlacePieces(Board *b) {
 		}
 		//Render the current ship, or highlight
 		if (highlightship) {
-			if (!b->IsPieceOnBoard(cpt)) {
-				break;
+			if (b->IsPieceOnBoard(cpt)) {
+				SetColor(winboard, 4);
+				int pos = b->GetPieceOnBoard(cpt);
+				if (pos != -1) {
+					SetColor(wnd, 2);
+					RenderToGrid(winboard, b->BoardPieces.at(pos));
+				}
 			}
-			SetColor(winboard, 4);
-			int pos = b->GetPieceOnBoard(cpt);
-			if (pos == -1) {
-				break;
-			}
-			ls = b->BoardPieces.at(pos).GetOccupiedSpace();
-			SetColor(wnd, 2);
-			for (int i = 0; i < getPieceLength(cpt); i++) {
-				mvwprintw(winboard, ls[i].x + 3, ls[i].y + 4, "X");
-			}
-			
 		}
 		else {
-			if (b->IsPieceOnBoard(cpt)) {
-				break;
+			//piece is not on board, so render as a sort of 'overlay'
+			if (!b->IsPieceOnBoard(cpt)) {
+				SetColor(winboard, 4);
+				int pos = b->GetPieceOnBoard(cpt);
+				if (pos == -1) {
+					RenderToGrid(winboard, tempship, "O");
+				}
 			}
-			SetColor(winboard, 4);
-			int pos = b->GetPieceOnBoard(cpt);
-			if (pos == -1) {
-				break;
-			}
-			ls = b->BoardPieces.at(pos).GetOccupiedSpace();
-			for (int i = 0; i < getPieceLength(cpt); i++) {
-				mvwprintw(winboard, ls[i].x + 3, ls[i].y + 4, "O");
-			}
-			
-		}
+		}//clear cursor
+		mvwprintw(wnd, 1, 13, "  ");
+		mvwprintw(wnd, 1, 31, "  ");
+		mvwprintw(wnd, 4, 16, "  ");
+		mvwprintw(wnd, 4, 28, "  ");
+		mvwprintw(wnd, 7, 16, "  ");
+		mvwprintw(wnd, 7, 27, "  ");
+		mvwprintw(wnd, 10, 17, "  ");
+		mvwprintw(wnd, 10, 26, "  ");
+		mvwprintw(wnd, 13, 16, "  ");
+		mvwprintw(wnd, 13, 27, "  ");
 		//paint cursor
 		SetColor(wnd, 3);
 		switch (static_cast<PieceType>(selected))
 		{
 		case AircraftCarrier:
 			mvwprintw(wnd, 1, 13, ">>");
-			mvwprintw(wnd, 1, 20, "<<");
+			mvwprintw(wnd, 1, 31, "<<");
 			break;
 		case Battleship:
-			mvwprintw(wnd, 3, 13, ">>");
-			mvwprintw(wnd, 3, 20, "<<");
+			mvwprintw(wnd, 4, 16, ">>");
+			mvwprintw(wnd, 4, 28, "<<");
 			break;
 		case Submarine:
-			mvwprintw(wnd, 5, 13, ">>");
-			mvwprintw(wnd, 5, 20, "<<");
+			mvwprintw(wnd, 7, 16, ">>");
+			mvwprintw(wnd, 7, 27, "<<");
 			break;
 		case Cruiser:
-			mvwprintw(wnd, 7, 13, ">>");
-			mvwprintw(wnd, 7, 20, "<<");
+			mvwprintw(wnd, 10, 17, ">>");
+			mvwprintw(wnd, 10, 26, "<<");
 			break;
 		case Destroyer:
-			mvwprintw(wnd, 9, 13, ">>");
-			mvwprintw(wnd, 9, 20, "<<");
+			mvwprintw(wnd, 13, 16, ">>");
+			mvwprintw(wnd, 13, 27, "<<");
 			break;
 		default:
 			break;
 		}
+		SetColor(wnd, 1);
+		refresh();
+		wrefresh(winboard);
+		wrefresh(wnd);
 		char ckey = getch();
 		switch (ckey)
 		{
 		//Attempt to move piece up
-		case KEY_UP:
+		case '\x3':
 			if (tempship.isValid) {
 				b->NextValidPieceSpot(&tempship, Up);
 			}
 			break;
 		//Attempt to move piece down
-		case KEY_DOWN:
+		case '\x2':
 			if (tempship.isValid) {
 				b->NextValidPieceSpot(&tempship, Down);
 			}
 			break;
 		//Attempt to move piece down
-		case KEY_LEFT:
+		case '\x4':
 			if (tempship.isValid) {
 				b->NextValidPieceSpot(&tempship, Left);
 			}
 			break;
 		//Attempt to move piece Right
-		case KEY_RIGHT:
+		case '\x5':
 			if (tempship.isValid) {
 				b->NextValidPieceSpot(&tempship, Right);
 			}
@@ -377,6 +383,7 @@ int UI::PlacePieces(Board *b) {
 			{
 				//doesnt exist
 				tempship.isValid = true;
+				tempship.Type = static_cast<PieceType>(selected);
 				b->NextValidPieceSpot(&tempship, ShipChange);
 			}
 			break;
@@ -391,6 +398,7 @@ int UI::PlacePieces(Board *b) {
 			{
 				//doesnt exist, yet
 				tempship.isValid = true;
+				tempship.Type = static_cast<PieceType>(selected);
 				b->NextValidPieceSpot(&tempship, ShipChange);
 			}
 			break;
@@ -399,16 +407,13 @@ int UI::PlacePieces(Board *b) {
 		If already selected, ignore.
 		if all pieces placed, start game
 		*/
-		case KEY_ENTER:
+		case '\n':
 			//already piece on board
 			if (b->IsPieceOnBoard(static_cast<PieceType>(selected))) {
 				if (b->BoardisValid()) {
 					bool result = ConfirmDialog("Would you like to continue?");
 					if (result) {
 						return 1;
-					}
-					else {
-						break;
 					}
 				}
 			}
@@ -417,36 +422,33 @@ int UI::PlacePieces(Board *b) {
 			else {
 				if (b->ValidPieceSpot(tempship)) {
 					b->BoardPieces.push_back(tempship);
+					tempship.isValid = false;
 				}
 			}
 			break;
 		//If piece is already placed down, remove it
-		case KEY_DL:
+		case '\b':
 			if (b->IsPieceOnBoard(static_cast<PieceType>(selected))) {
 				int pos = b->GetPieceOnBoard(static_cast<PieceType>(selected));
-				if (pos == -1) {
-					break;
-				}
-				Piece px = b->BoardPieces.at(pos);
-				if (b->ValidPieceSpot(px)) {
-					tempship.CenterAxis = px.CenterAxis;
-					tempship.orientation = px.orientation;
-					tempship.isValid = true;
-					tempship.Type = px.Type;
-					b->PopPieceFromBoard(static_cast<PieceType>(selected));
+				if (pos != -1) {
+					Piece px = b->BoardPieces.at(pos);
+					//if (b->ValidPieceSpot(px)) {
+						tempship.CenterAxis = px.CenterAxis;
+						tempship.orientation = px.orientation;
+						tempship.isValid = true;
+						tempship.Type = px.Type;
+						b->PopPieceFromBoard(static_cast<PieceType>(selected));
+					//}
 				}
 			}
 			break;
 		//clears board, and returns to main menu
-		case KEY_EXIT:
+		case '\x1b':
 		{
 				bool result = ConfirmDialog("Would you like to quit?");
 				if (result) {
 					b->ClearBoard();
 					return 0;
-				}
-				else {
-					break;
 				}
 				//Confirm dialog!
 				break;
@@ -460,33 +462,45 @@ int UI::PlacePieces(Board *b) {
 }
 #pragma endregion
 
+void UI::RenderToGrid (WINDOW* wnd, Piece pc, char* l) {
+	vector<Coordinate> ls = pc.GetOccupiedSpace();
+	//
+	for (auto c: ls) {
+		if (c.x < 0 || c.x > 9 || c.y < 0 || c.y > 9) {
+			break;
+		}
+		else {
+			mvwprintw(wnd, (c.x * 2) + 3, (c.y * 2) + 4, l);
+		}
+	}
+}
 
 bool ConfirmDialog(char* text) {
-	int s = 0;
-	WINDOW *winexit = newwin(5, 15, 20, 20);
+	//newwin:(height, width, starty,startx)
+	WINDOW *winexit = newwin(7,35, 8,25);
 	SetColor(winexit, 1, COLOR_BLACK, COLOR_WHITE, false);
-	SetColor(winexit, 2, COLOR_RED, COLOR_WHITE);
+	//wbkgdset(winexit, COLOR_PAIR(1));
+	wborder(winexit, '|', '|', '-', '-', '+', '+', '+', '+');
 	int c = 0;
 	while (true) {
 		SetColor(winexit, 1);
-		mvwprintw(winexit, 1, 4, text);
-		mvwprintw(winexit, 1, 4, "Yes");
-		mvwprintw(winexit, 1, 9, "No");
+		mvwprintw(winexit, 1, 5, text);
+		mvwprintw(winexit, 4, 3, "Press Enter to continue");
+		mvwprintw(winexit, 5, 1, "Press Escape to close dialog");
 		wrefresh(winexit);
 		//render cursor
-		char cu = getch();
-		if (cu == KEY_LEFT || cu == KEY_RIGHT) {
-			s = (s) ? false : true;
-		}
-		else if (cu == '/n') {
-			//selected no
-			if (s == 1) {
+		char cu = ' ';
+		while (cu != '\n' || cu != '\x1b') {
+			cu = getch();
+			//enter
+			if (cu == '\n') {
 				delwin(winexit);
 				return true;
 			}
-			//selected yes
-			else {
+			//escape
+			else if (cu == '\x1b' ){
 				delwin(winexit);
+				clear();
 				return false;
 			}
 		}

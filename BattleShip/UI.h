@@ -32,6 +32,8 @@ private:
 	Board *UserBoard;
 	Board *AIBoard;
 	Game CurrentGame;
+	//Render's piece to grid
+	void RenderToGrid(WINDOW* wnd, Piece pc, char* l = "X");
 	int game;
 };
 bool ConfirmDialog(char* text);

@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "GameLogic.h"
 #include <iostream>
+#include <time.h>
 using namespace std;
 //Initlialize the board
 #pragma region BoardCode
@@ -165,6 +166,8 @@ void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 		break;
 	}
 	//expand out until space is found
+	int rattempts = 0;
+	srand(time(NULL));
 	while (!isValid) {
 		int newx = rand() % 10;//0 to 9
 		int newy = rand() % 10;//0 to 9
@@ -174,13 +177,27 @@ void Board::NextValidPieceSpot(Piece *loc, PieceMovement pm) {
 		loc->CenterAxis.x = newx;
 		loc->CenterAxis.y = newy;
 		ls = loc->GetOccupiedSpace();
-		for (int i = 0; i < getPieceLength(loc->Type); i++) {
-			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
-				break;
+		int ecount = 0;
+		for (int r = 0; r < 3; r++) {
+			for (int i = 0; i < getPieceLength(loc->Type); i++) {
+				if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
+					ecount++;
+					break;
+				}
+				else if (available[ls[i].x][ls[i].y] == -1) {
+					ecount++;
+					break;
+				}
 			}
-			else if (available[ls[i].x][ls[i].y] == -1) {
-				break;
+			if (ecount == 0) {
+				return;
 			}
+			loc->rotateRight();
+			ecount = 0;
+		}
+		rattempts++;
+		if (rattempts > 200) {
+			break;
 		}
 	}
 	return;
@@ -328,23 +345,23 @@ void Piece::rotateRight() {
 	orientation = static_cast<Orientation>(orientation + 1);
 }
 
-void Piece::shiftDown() {
-	if (CenterAxis.x == 9) {
-		CenterAxis.x = 0;
+void Piece::shiftRight() {
+	if (CenterAxis.y == 9) {
+		CenterAxis.y = 0;
 		return;
 	}
 	CenterAxis.y += 1;
 }
 
-void Piece::shiftUp() {
+void Piece::shiftLeft() {
 	if (CenterAxis.y == 0) {
-		CenterAxis.x = 9;
+		CenterAxis.y = 9;
 		return;
 	}
 	CenterAxis.y -= 1;
 }
 
-void Piece::shiftLeft() {
+void Piece::shiftUp() {
 	if (CenterAxis.x == 0) {
 		CenterAxis.x = 9;
 		return;
@@ -352,7 +369,7 @@ void Piece::shiftLeft() {
 	CenterAxis.x -= 1;
 }
 
-void Piece::shiftRight() {
+void Piece::shiftDown() {
 	if (CenterAxis.x == 9) {
 		CenterAxis.x = 0;
 		return;
