@@ -102,8 +102,6 @@ GameResult Game::PlayGame() {
 		}
 	}
 	if (P1Board->BoardResult() == Lose) {
-		p1chanin.put(grLose);
-		p2chanin.put(grWin);
 		p1chanin.close();
 		p1chanout.close();
 		p2chanin.close();
@@ -113,8 +111,6 @@ GameResult Game::PlayGame() {
 		return Lose;
 		//} else if(P2Board->BoardResult == Lose){
 	} else {
-		p1chanin.put(grWin);
-		p2chanin.put(grLose);
 		p1chanin.close();
 		p1chanout.close();
 		p2chanin.close();
@@ -148,9 +144,6 @@ void Player::StartGameLoop(Channel<MoveResult> *chanin, Channel<Coordinate> *cha
 			chanin->get(mr);
 		}
 		if (mr == Quit) {
-			break;
-		}
-		if (mr == grWin || mr == grLose) {
 			break;
 		}
 		ProcessMove(mr);

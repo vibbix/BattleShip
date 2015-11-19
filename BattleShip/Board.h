@@ -17,11 +17,10 @@ enum GameResult {
 enum MoveResult {
 	Hit,
 	Miss,
+	ShipSunk,
 	InvalidMove,
 	MoveRequest,
-	Quit,
-	grWin,
-	grLose
+	Quit
 };
 //Piece orientation
 enum Orientation {
@@ -130,6 +129,8 @@ struct Board {
 	bool IsPieceOnBoard(PieceType pt);
 	/*Deletes a piece from the board, if it exists*/
 	bool PopPieceFromBoard(PieceType pt);
+	//Check if upon this coordinates hit, a ship will sink
+	bool WillSinkShip(Coordinate c);
 	/*Returns the index of the board piece*/
 	int GetPieceOnBoard(PieceType pt);
 	/*Deletes all instance data*/

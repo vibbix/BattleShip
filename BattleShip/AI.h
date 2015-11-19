@@ -16,8 +16,13 @@ public:
 	AI();
 	//Creates the AI instance
 	AI(Difficulty intel);
+	//Inherited functions:
+
+	Coordinate MakeMove();
 	//
 	void PlacePieces();
+
+	void ProcessMove(MoveResult mr);
 private:
 	/* http://www.datagenetics.com/blog/december32011/ */
 	//EasyAI, just random hits
@@ -30,5 +35,10 @@ private:
 	int lastDirection;
 	//AdvanceAI, uses probability
 	void AdvanceAI();
-	
+	//Stage 1:get point to target
+	Coordinate GetRandomPoint(bool wparity = false);
+	Coordinate GetProbabilityPoint();
+	Coordinate GetHunterPoint();
+	//
+
 };

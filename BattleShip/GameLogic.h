@@ -10,12 +10,19 @@ using namespace std;
 class Player {
 public:
 	Player();
+	virtual ~Player() = 0;
 	//Thread indepedent game loop
 	void StartGameLoop(Channel<MoveResult> *chanin, Channel<Coordinate> *chanout);
 	//Place Pieces on board, verifies all is good
-	virtual void PlacePieces() = 0;
-	virtual Coordinate MakeMove() = 0;
-	virtual void ProcessMove(MoveResult) = 0;
+	virtual void PlacePieces() {
+		return;
+	}
+	virtual Coordinate MakeMove() {
+		return Coordinate{ 0,0 };
+	};
+	virtual void ProcessMove(MoveResult mr) {
+		return;
+	};
 	//Set's the players board
 	void setPlayerBoard(Board *pb);
 	//Set's the hit vectors up
@@ -28,6 +35,9 @@ protected:
 	//Hit's on opponents board
 	vector<Coordinate> *opponentHits;
 };
+
+// Provide a definition for destructor.
+Player::~Player() {}
 
 //Core Game Logic
 class Game {

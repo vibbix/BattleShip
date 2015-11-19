@@ -41,11 +41,27 @@ MoveResult Board::isHit(Coordinate hit) {
 	int available[10][10];
 	bool check = GetAvailabilityGrid(available);
 	if (available[hit.x][hit.y] != 0) {
+		//Check if it will sink ships
 		return Hit;
 	}
 	return Miss;
 }
 
+bool Board::WillSinkShip(Coordinate c){
+	//For each piece, get all hits.
+	//if the total amount of missing hits is 1,
+	//check if that hit is equal to parameter c
+	vector<Coordinate> ls;
+	for (auto pc : BoardPieces) {
+		ls = pc.GetOccupiedSpace();
+		int chit = 0;
+		for (Coordinate h : Hits) {
+			
+		}
+	}
+
+
+}
 GameResult Board::BoardResult() {
 	//Get all possible occupied space
 	int available[10][10];
