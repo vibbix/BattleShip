@@ -155,6 +155,7 @@ void UI::StartUI() {
 }
 //Finish later
 GameResult UI::PlayGame() {
+	//create two grids: Player & enemy
 	return InProgress;
 }
 

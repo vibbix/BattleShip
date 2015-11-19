@@ -20,7 +20,7 @@ AI::AI(Difficulty intel) {
 //	}*/
 //	return Coordinate{ 0,0 };
 //}
-//
+
 
 void AI::PlacePieces() {
 	

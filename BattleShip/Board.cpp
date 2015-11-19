@@ -10,25 +10,42 @@ Board::Board() {
 	BoardPieces = vector<Piece>();
 }
 
-void Board::AddHit(Coordinate hit) {
-	//TODO add sanity check here
-	Hits.push_back(hit);
-}
-
-MoveResult Board::isHit(Coordinate hit) {
+bool Board::AddHit(Coordinate hit) {
+	//check if valid
 	if (hit.x < 0 || hit.x > 9 || hit.y < 0 || hit.y > 9) {
-		return InvalidMove;
+		return false;
 	}
+	//check if duplicate
 	for (uint8_t i = 0; i < Hits.size(); i++) {
 		Coordinate coord = Hits.at(i);
 		if (coord.x == hit.x && coord.y == hit.y) {
-			return Hit;
+			return false;
 		}
 	}
-	
+	Hits.push_back(hit);
+	return true;
+}
+
+MoveResult Board::isHit(Coordinate hit) {
+	//check if valid coord
+	if (hit.x < 0 || hit.x > 9 || hit.y < 0 || hit.y > 9) {
+		return InvalidMove;
+	}
+	//check if duplicate
+	for (uint8_t i = 0; i < Hits.size(); i++) {
+		Coordinate coord = Hits.at(i);
+		if (coord.x == hit.x && coord.y == hit.y) {
+			return InvalidMove;
+		}
+	}
+	int available[10][10];
+	bool check = GetAvailabilityGrid(available);
+	if (available[hit.x][hit.y] != 0) {
+		return Hit;
+	}
 	return Miss;
 }
-//FINISH THIS
+
 GameResult Board::BoardResult() {
 	//Get all possible occupied space
 	int available[10][10];
@@ -39,6 +56,21 @@ GameResult Board::BoardResult() {
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			available[ls[i].x][ls[i].y] -= 1;
 		}
+	}
+	for (auto hit : Hits) {
+		available[hit.x][hit.y] -= 1;
+	}
+
+	int hcount = 0;
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			if (available[i][j] == -2) {
+				hcount++;
+			}
+		}
+	}
+	if (hcount == 17) {
+		return Lose;
 	}
 	//get's all hits
 	return InProgress;

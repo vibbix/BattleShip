@@ -19,9 +19,10 @@ enum MoveResult {
 	Miss,
 	InvalidMove,
 	MoveRequest,
-	Quit
+	Quit,
+	grWin,
+	grLose
 };
-
 //Piece orientation
 enum Orientation {
 	//Piece is straight up... i.e. [0,0], [0,1], [0,2]
@@ -108,7 +109,7 @@ struct Board {
 	/*The collection of hits on this board*/
 	vector<Coordinate> Hits; 
 	/*Add's a hit*/
-	void AddHit(Coordinate hit);
+	bool AddHit(Coordinate hit);
 	/*Tell's you if the coordinate has already been hit*/
 	MoveResult isHit(Coordinate hit);
 	/*Get's the the GameState of the board*/
