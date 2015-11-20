@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "AI.h"
+#include <Windows.h>
 
 AI::AI() {
 	aiIntel = Easy;
@@ -19,6 +20,7 @@ Coordinate AI::MakeMove() {
 	else {
 		return AdvanceAI();
 	}*/
+	OutputDebugStringA("AI Thread: Getting move/n");
 	return GetRandomPoint();
 }
 
@@ -76,21 +78,27 @@ Coordinate AI::GetHunterPoint() {
 };
 //FINISH THIS FUNCTION
 void AI::ProcessMove(MoveResult mr) {
+	OutputDebugStringA("AI Thread: Processing move/n");
 	return;
 }
 
 void AI::PlacePieces() {
 	PieceType pt[5];
+	srand(time(NULL));
 	for (int i = 0; i < 5; i++) {
 		pt[i] = static_cast<PieceType>(i);
+		int x = rand() % 10;
+		Sleep(1);
+		int y = rand() % 10;
 		Piece pc = Piece();
+		pc.Type = pt[i];
 		pc.CenterAxis = Coordinate{ 0,0 };
 		int rotate = rand() % 2;
 		if (rotate == 1) {
 			pc.rotateRight();
 		}
 		PlayerBoard->NextValidPieceSpot(&pc, Right);
-		while (PlayerBoard->ValidPieceSpot(pc)) {
+		while (!PlayerBoard->ValidPieceSpot(pc)) {
 			PlayerBoard->NextValidPieceSpot(&pc, Clockwise);
 		}
 		PlayerBoard->BoardPieces.push_back(pc);
@@ -98,6 +106,7 @@ void AI::PlacePieces() {
 	while (!PlayerBoard->BoardisValid()) {
 		for (auto pc : PlayerBoard->BoardPieces) {
 			PlayerBoard->NextValidPieceSpot(&pc, Clockwise);
+			Sleep(1);
 		}
 	}
 

@@ -158,8 +158,13 @@ GameResult UI::PlayGame() {
 	//create two grids: Player & enemy
 	Channel<MoveResult> *mr = new Channel<MoveResult>();
 	Channel<Coordinate> *cs = new Channel<Coordinate>();
-	CurrentGame.SetP1(&UserPlayer(mr, cs));
-	CurrentGame.SetP2(&AI(CAI));
+	UserPlayer cup = UserPlayer(mr, cs);
+	CurrentGame.SetP1(&cup);
+	cup.setPlayerBoard(CurrentGame.GetP1Board());
+	AI ccai = AI(CAI);
+	ccai.setPlayerBoard(CurrentGame.GetP2Board());
+	ccai.PlacePieces();
+	CurrentGame.SetP2(&ccai);
 	initscr();
 	WINDOW *PlayerBoard = newwin(23, 24, 1, 1);
 	WINDOW *AIBoard = newwin(23, 24, 1, 50);
@@ -168,9 +173,7 @@ GameResult UI::PlayGame() {
 	SetColor(AIBoard, 1, COLOR_WHITE, COLOR_BLACK);
 	SetColor(PlayerBoard, 2, COLOR_RED, COLOR_BLACK);
 	SetColor(AIBoard, 2, COLOR_RED, COLOR_BLACK);
-	wborder(PlayerBoard, '|', '|', '-', '-', '+', '+', '+', '+');
-	wborder(AIBoard, '|', '|', '-', '-', '+', '+', '+', '+');
-	wborder(EntryArea, '|', '|', '-', '-', '+', '+', '+', '+');
+
 	noecho();
 	//cbreak();
 	curs_set(0);
@@ -178,6 +181,13 @@ GameResult UI::PlayGame() {
 	keypad(stdscr, TRUE);
 	std::thread cg(&Game::PlayGame, &CurrentGame);
 	while (true) {
+		clear();
+		wclear(PlayerBoard);
+		wclear(AIBoard);
+		wclear(EntryArea);
+		wborder(PlayerBoard, '|', '|', '-', '-', '+', '+', '+', '+');
+		wborder(AIBoard, '|', '|', '-', '-', '+', '+', '+', '+');
+		wborder(EntryArea, '|', '|', '-', '-', '+', '+', '+', '+');
 		RenderToGrid(PlayerBoard, CurrentGame.GetP1Board()->Hits);
 		RenderToGrid(AIBoard, CurrentGame.GetP2Board()->Hits);
 		//render playerboard

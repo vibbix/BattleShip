@@ -312,15 +312,27 @@ bool Board::GetAvailabilityGrid(int(&grid)[10][10]) {
 	}
 	vector<Coordinate> ls;
 	//Get's all pieces
+	bool inloop = false;
+	if (this == nullptr) {
+		return false;
+	}
 	for (auto pc : BoardPieces) {
+		inloop = true;
 		ls = pc.GetOccupiedSpace();
 		for (int i = 0; i < getPieceLength(pc.Type); i++) {
 			if (ls[i].x < 0 || ls[i].x > 9 || ls[i].y < 0 || ls[i].y > 9) {
+				continue;
 				return false;
 			}
-			grid[ls[i].x][ls[i].y] = -1;
+			else {
+				grid[ls[i].x][ls[i].y] = -1;
+			}
+			
 		}
 	}
+	//if (!inloop) {
+	//	return false;
+	//}
 	return true;
 }
 
@@ -358,6 +370,10 @@ int Board::GetPieceOnBoard(PieceType pt) {
 #pragma endregion
 #pragma region PieceCommands
 Piece::Piece() {
+	CenterAxis = Coordinate{ 0,0 };
+	piecelength = 0;
+	orientation = ZeroDegrees;
+	Type = AircraftCarrier;
 	isValid = false;
 }
 
