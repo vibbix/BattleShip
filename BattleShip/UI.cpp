@@ -181,15 +181,16 @@ GameResult UI::PlayGame() {
 	keypad(stdscr, TRUE);
 	std::thread cg(&Game::PlayGame, &CurrentGame);
 	while (true) {
+		MoveResult tmp;
+		mr->get(tmp,false);
 		clear();
 		wclear(PlayerBoard);
 		wclear(AIBoard);
 		wclear(EntryArea);
+		mvwprintw(EntryArea, 3, 1, "       <-P:E->");
 		wborder(PlayerBoard, '|', '|', '-', '-', '+', '+', '+', '+');
 		wborder(AIBoard, '|', '|', '-', '-', '+', '+', '+', '+');
 		wborder(EntryArea, '|', '|', '-', '-', '+', '+', '+', '+');
-		RenderToGrid(PlayerBoard, CurrentGame.GetP1Board()->Hits);
-		RenderToGrid(AIBoard, CurrentGame.GetP2Board()->Hits);
 		//render playerboard
 		mvwprintw(PlayerBoard, 1, 4, "A B C D E F G H I J");
 		for (int i = 0; i < 22; i += 2) {
@@ -216,27 +217,46 @@ GameResult UI::PlayGame() {
 				mvwprintw(AIBoard, i + 3, 1, gletter.c_str());
 			}
 		}
+		RenderToGrid(PlayerBoard, CurrentGame.GetP1Board()->Hits);
+		RenderToGrid(AIBoard, CurrentGame.GetP2Board()->Hits);
 		//
 		refresh();
 		wrefresh(PlayerBoard);
 		wrefresh(AIBoard);
 		wrefresh(EntryArea);
-		char ychar = getchar();
-		while (ychar < 'A' || ychar > 'J') {
-			ychar = getchar();
-			mvwprintw(EntryArea, 2, 2, &ychar);
-		}
-		int y = ychar - 'A';
-
-		char xchar = getchar();
-		while (xchar < '0' || xchar > '9') {
-			xchar = getchar();
-			mvwprintw(EntryArea, 2, 2, &xchar);
-		}
-		int x = xchar - '0';
-		cs->put(Coordinate{ y,x});
 		MoveResult cmr;
-		mr->get(cmr);
+		while (true) {
+			char ychar = getchar();
+			while (ychar < 'a' || ychar > 'j') {
+				ychar = getchar();
+			}
+			mvwprintw(EntryArea, 1, 2, &ychar);
+			wrefresh(EntryArea);
+			int y = ychar - 'a';
+
+			char xchar = getchar();
+			while (xchar < '0' || xchar > '9') {
+				xchar = getchar();
+			}
+			mvwprintw(EntryArea, 1, 3, &xchar);
+			wrefresh(EntryArea);
+			int x = xchar - '0';
+			cs->put(Coordinate{ x,y });
+			mr->get(cmr);
+			if (cmr == InvalidMove) {
+				mvwprintw(EntryArea, 1, 2, "IM");
+				continue;
+			}
+			if (cmr == Hit) {
+				mvwprintw(EntryArea, 2, 2, "HIT");
+			}
+			else if (cmr == Miss) {
+				mvwprintw(EntryArea, 2, 2, "MISS");
+			}
+			wrefresh(EntryArea);
+			getch();
+			break;
+		}
 		if (cmr == Quit) {
 			break;
 		}
@@ -577,7 +597,6 @@ void UI::RenderToGrid(WINDOW* wnd, vector<Coordinate> ls, char* l) {
 	}
 }
 
-
 bool ConfirmDialog(char* text) {
 	//newwin:(height, width, starty,startx)
 	WINDOW *winexit = newwin(7,35, 8,25);
@@ -587,9 +606,9 @@ bool ConfirmDialog(char* text) {
 	int c = 0;
 	while (true) {
 		SetColor(winexit, 1);
-		mvwprintw(winexit, 1, 5, text);
-		mvwprintw(winexit, 4, 3, "Press Enter to continue");
-		mvwprintw(winexit, 5, 1, "Press Escape to close dialog");
+		mvwprintw(winexit, 1, 4, text);
+		mvwprintw(winexit, 4, 6, "Press Enter to continue");
+		mvwprintw(winexit, 5, 4, "Press Escape to close dialog");
 		wrefresh(winexit);
 		//render cursor
 		char cu = ' ';

@@ -48,74 +48,59 @@ GameResult Game::PlayGame() {
 	P2->setHits(&P1Board->Hits);
 	srand(time(NULL));
 	//determines which player goes first
-	int fplayer = rand() % 2;
+	//int fplayer = rand() % 2;
 	OutputDebugStringA("\nGame Thread: Starting game threads");
 	std::thread p1thread(&Player::StartGameLoop, P1, &p1chanin, &p1chanout);
 	std::thread p2thread(&Player::StartGameLoop, P2, &p2chanin, &p2chanout);
 	while ((P1Board->BoardResult() == InProgress) && (P2Board->BoardResult() == InProgress)) {
 		//p1 is first
-		int start = fplayer;
+		//int start = fplayer;
 		bool victory = false;
 		bool p1gone = false, p2gone = false;
-		while (!p1gone && !p2gone) {
-			switch (start)
-			{
-			//p1
-			case 0:{
-				OutputDebugStringA("\nGame Thread: P1 gettin moverequest");
-				//request p1 move
-				p1chanin.put(MoveRequest);
-				//process p1 move
-				Coordinate c;
-				p1chanout.get(c);
-				OutputDebugStringA("\nGame Thread: P1 got c");
-				//send back p1 move
-				MoveResult mr = P2Board->isHit(c);
-				while (mr == InvalidMove) {
-					OutputDebugStringA("\nGame Thread: Coord is invalid");
-					p1chanin.put(InvalidMove);
-					p1chanout.get(c);
-					mr = P2Board->isHit(c);
-				}
-				OutputDebugStringA("\nGame Thread: Sending back MR");
-				p1chanin.put(mr);
-				p1gone = true;
-				//end P1 turn
-				
-				break;
-			}
-			//p1
-			case 1:{
-				if (victory){
-					break;
-				}
-				//request p2 move
-				OutputDebugStringA("\nGame Thread: P2 getting moverequest");
-				p2chanin.put(MoveRequest);
-				//process p2 move
-				Coordinate c;
-				p2chanout.get(c);
-				OutputDebugStringA("\nGame Thread: P2 got coord");
-				//send back p1 move
-				MoveResult mr = P2Board->isHit(c);
-				while (mr == InvalidMove) {
-					OutputDebugStringA("\nGame Thread: P2 invalid move");
-					p2chanin.put(InvalidMove);
-					p2chanout.get(c);
-					mr = P1Board->isHit(c);
-				}
-				OutputDebugStringA("\nGame Thread: P2 sending back MR");
-				p2chanin.put(mr);
-				p2gone = true;
-				//end P2 turn
-				break;
-			}
-			default:
-				break;
-			}
-			victory = ((P1Board->BoardResult() == Lose) || (P2Board->BoardResult() == Lose));
-			start = (start == 0) ? 1 : 0;
+		//p1
+		OutputDebugStringA("\nGame Thread: P1 gettin moverequest");
+		//request p1 move
+		p1chanin.put(MoveRequest);
+		//process p1 move
+		Coordinate c;
+		p1chanout.get(c);
+		OutputDebugStringA("\nGame Thread: P1 got c");
+		//send back p1 move
+		MoveResult mr = P2Board->isHit(c);
+		while (mr == InvalidMove) {
+			OutputDebugStringA("\nGame Thread: Coord is invalid");
+			p1chanin.put(InvalidMove);
+			p1chanout.get(c);
+			mr = P2Board->isHit(c);
 		}
+		OutputDebugStringA("\nGame Thread: Sending back MR");
+		p1chanin.put(mr);
+		P2Board->AddHit(c);
+		p1gone = true;
+		//end P1 turn
+
+		//request p2 move
+		OutputDebugStringA("\nGame Thread: P2 getting moverequest");
+		p2chanin.put(MoveRequest);
+		//process p2 move
+		Coordinate c2;
+		p2chanout.get(c2);
+		OutputDebugStringA("\nGame Thread: P2 got coord");
+		//send back p1 move
+		MoveResult mr2 = P2Board->isHit(c2);
+		while (mr2 == InvalidMove) {
+			OutputDebugStringA("\nGame Thread: P2 invalid move");
+			p2chanin.put(InvalidMove);
+			p2chanout.get(c2);
+			mr2 = P1Board->isHit(c2);
+		}
+		OutputDebugStringA("\nGame Thread: P2 sending back MR");
+		p2chanin.put(mr2);
+		p2gone = true;
+		P1Board->AddHit(c2);
+		//end P2 turn
+		victory = ((P1Board->BoardResult() == Lose) || (P2Board->BoardResult() == Lose));
+		// = (start == 0) ? 1 : 0;
 	}
 	OutputDebugStringA("\nGame Thread: GAMEOVER");
 	if (P1Board->BoardResult() == Lose) {
@@ -127,7 +112,8 @@ GameResult Game::PlayGame() {
 		p2thread.join();
 		return Lose;
 		//} else if(P2Board->BoardResult == Lose){
-	} else {
+	}
+	else {
 		p1chanin.close();
 		p1chanout.close();
 		p2chanin.close();
