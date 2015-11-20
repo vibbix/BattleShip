@@ -1,6 +1,7 @@
 #pragma once
-#include "Board.h"
 #include "GameLogic.h"
+#include "Board.h"
+#pragma message ("AI object is defined")
 //Game Difficulty
 enum Difficulty {
 	//Just random hits
@@ -14,23 +15,30 @@ class AI : public Player {
 public:
 	AI();
 	//Creates the AI instance
-	AI(Difficulty intel, Board *b);
+	AI(Difficulty intel);
+	//Inherited functions:
+
+	Coordinate MakeMove();
 	//
-	Coordinate GetMove();
-	MoveResult GetMoveResult(Coordinate c);
-	GameResult GetResult();
 	void PlacePieces();
+
+	void ProcessMove(MoveResult mr);
 private:
 	/* http://www.datagenetics.com/blog/december32011/ */
 	//EasyAI, just random hits
-	void EasyAI();
+	Coordinate EasyAI();
 	Difficulty aiIntel;
 	//MediumAI, uses random hits + direction attempting
-	void MediumAI();
+	//void MediumAI();
 	Coordinate current;//Current Coordinate
 	int AvailableDirections; //[N, E, S, W] -> [8, 4, 2, 1]
 	int lastDirection;
 	//AdvanceAI, uses probability
-	void AdvanceAI();
-	
+	//void AdvanceAI();
+	//Stage 1:get point to target
+	Coordinate GetRandomPoint(bool wparity = false);
+	Coordinate GetProbabilityPoint();
+	Coordinate GetHunterPoint();
+	//
+
 };

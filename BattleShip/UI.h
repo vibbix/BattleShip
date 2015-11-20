@@ -1,6 +1,9 @@
 #pragma once
-#include "AI.h"
 #include "GameLogic.h"
+#include "AI.h"
+#include "curses.h"
+
+#pragma message ("UI object is defined")
 /*Implements the UI
 -board display
 -main menu
@@ -12,6 +15,7 @@
 class UI {
 public:
 	UI();
+	UI(UI &&){}
 	//Starts the UI Thread
 	void StartUI();
 	//Starts the title screen
@@ -20,14 +24,23 @@ public:
 	int StartMenu();
 	//Select the difficulty
 	Difficulty SelectDifficulty();
-	//Places pieces for player board
-	Board *PlacePieces();
+	//Places pieces for player board, 0 for stop, 1 for continue
+	int PlacePieces(Board *b);
 	//Play Game
 	GameResult PlayGame();
 private:
+	Difficulty CAI;
 	Board *UserBoard;
 	Board *AIBoard;
 	Game CurrentGame;
+	//Render's piece to grid
+	void RenderToGrid(WINDOW* wnd, Piece pc, char* l = "X");
+	void RenderToGrid(WINDOW* wnd, vector<Coordinate> ls, char* l = "X");
+	int game;
 };
-void SetColor(short num, short text, short backround);
+bool ConfirmDialog(char* text);
+
+void SetColor(short num, short text, short backround, bool isInit=true);
 void SetColor(short num);
+void SetColor(WINDOW* win, short num, short text, short backround, bool isInit = true);
+void SetColor(WINDOW* win, short num);

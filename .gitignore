@@ -1,5 +1,5 @@
 #VSS junk
-
+*.opensdf
 
 # Windows image file caches
 Thumbs.db
@@ -50,7 +50,9 @@ x64
 .vs
 Debug
 Packages
+Battleship/Release
 BattleShip/Debug
 BattleShip/x64
 *.sdf
 *.suo
+.vs/BattleShip/v14/.suo

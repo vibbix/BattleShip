@@ -3,7 +3,25 @@
 #include <string>
 #include <vector>
 #include <cstring>
+
+
+#pragma message ("Board object, piece & coordinate struct are defined.")
 using namespace std;
+//The result of the game
+enum GameResult {
+	Win,
+	Lose,
+	InProgress
+};
+//the result
+enum MoveResult {
+	Hit,
+	Miss,
+	ShipSunk,
+	InvalidMove,
+	MoveRequest,
+	Quit
+};
 //Piece orientation
 enum Orientation {
 	//Piece is straight up... i.e. [0,0], [0,1], [0,2]
@@ -15,6 +33,17 @@ enum Orientation {
 	//Piece is left of its center... i.e. [0,0], [-1,0], [-2, 0]
 	TwoHundredSeventyDegrees
 };
+//movement of pieces for piece placement
+enum PieceMovement {
+	Left = 1 << 0,
+	Right = 1 << 1,
+	Up = 1 << 2,
+	Down = 1 << 3,
+	Clockwise = 1 << 4,
+	CounterClockwise = 1 << 5,
+	ShipChange = 1 << 6
+};
+//Type of piece
 enum PieceType {
 	//A single 1x5 unit, Radiation level .5
 	AircraftCarrier,
@@ -68,27 +97,42 @@ struct Piece {
 	//Rotates piece to the right
 	void rotateRight();
 	//Get's the position of each space the ship occupies
-	Coordinate *GetOccupiedSpace();
+	vector<Coordinate> GetOccupiedSpace();
 };
 //A ten by ten array of pieces
 struct Board {
-	//Default construcutor
+	/*Default construcutor*/
 	Board();
-	//Intializes the Board
+	/*Intializes the Board*/
 	vector<Piece> BoardPieces;
-	//The collection of hits on this board
-	vector<Coordinate> *Hits; 
-	//Add's a hit
-	void AddHit(Coordinate hit);
-	//Tell's you if the coordinate has already been hit
-	bool IsHit(Coordinate hit);
-	//Get's the the GameState of the board
+	/*The collection of hits on this board*/
+	vector<Coordinate> Hits; 
+	/*Add's a hit*/
+	bool AddHit(Coordinate hit);
+	/*Tell's you if the coordinate has already been hit*/
+	MoveResult isHit(Coordinate hit);
+	/*Get's the the GameState of the board*/
 	GameResult BoardResult();
-	//Valid place to put piece
+	/*Get's the piece at coordinate, if exists*/
+	Piece *GetPieceAtCoordinate(Coordinate c);
+	/*Valid place to put piece*/
 	bool ValidPieceSpot(Piece loc);
-	//Next valid spot to put piece
-	void NextValidPieceSpot(Piece *loc, bool isVertical, bool isRotating);
-	//Deletes all instance data
-	void Delete();
+	/*Next valid spot to put piece*/
+	void NextValidPieceSpot(Piece *loc, PieceMovement pm);
+	/*Validates if board is Allset*/
+	bool BoardisValid();
+	/*Get's the availability grid, used for various functions*/
+	bool GetAvailabilityGrid(int (&grid)[10][10]);
+	/*Clears the board*/
+	void ClearBoard();
+	/*Checks if piece already exists*/
+	bool IsPieceOnBoard(PieceType pt);
+	/*Deletes a piece from the board, if it exists*/
+	bool PopPieceFromBoard(PieceType pt);
+	//Check if upon this coordinates hit, a ship will sink
+	bool WillSinkShip(Coordinate c);
+	/*Returns the index of the board piece*/
+	int GetPieceOnBoard(PieceType pt);
+	/*Deletes all instance data*/
+	//void Delete();
 };
-
