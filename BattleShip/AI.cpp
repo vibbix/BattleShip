@@ -19,7 +19,7 @@ Coordinate AI::MakeMove() {
 	else {
 		return AdvanceAI();
 	}*/
-	return Coordinate{ 0,0 };
+	return GetRandomPoint();
 }
 
 Coordinate AI::EasyAI() {
@@ -76,7 +76,7 @@ Coordinate AI::GetHunterPoint() {
 };
 //FINISH THIS FUNCTION
 void AI::ProcessMove(MoveResult mr) {
-
+	return;
 }
 
 void AI::PlacePieces() {

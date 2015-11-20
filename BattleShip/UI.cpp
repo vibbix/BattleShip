@@ -150,6 +150,7 @@ void UI::StartUI() {
 	CAI = SelectDifficulty();
 	//CurrentGame = Game();
 	PlacePieces(CurrentGame.GetP1Board());
+	GameResult gr = PlayGame();
 	return;
 }
 //Finish later
@@ -161,8 +162,8 @@ GameResult UI::PlayGame() {
 	CurrentGame.SetP2(&AI(CAI));
 	initscr();
 	WINDOW *PlayerBoard = newwin(23, 24, 1, 1);
-	WINDOW *AIBoard = newwin(23, 24, 1, 30);
-	WINDOW *EntryArea = newwin(3, 3, 15, 20);
+	WINDOW *AIBoard = newwin(23, 24, 1, 50);
+	WINDOW *EntryArea = newwin(7, 20, 8, 26);
 	SetColor(PlayerBoard, 1, COLOR_WHITE, COLOR_BLACK);
 	SetColor(AIBoard, 1, COLOR_WHITE, COLOR_BLACK);
 	SetColor(PlayerBoard, 2, COLOR_RED, COLOR_BLACK);
@@ -206,6 +207,10 @@ GameResult UI::PlayGame() {
 			}
 		}
 		//
+		refresh();
+		wrefresh(PlayerBoard);
+		wrefresh(AIBoard);
+		wrefresh(EntryArea);
 		char ychar = getchar();
 		while (ychar < 'A' || ychar > 'J') {
 			ychar = getchar();
@@ -218,7 +223,8 @@ GameResult UI::PlayGame() {
 			xchar = getchar();
 			mvwprintw(EntryArea, 2, 2, &xchar);
 		}
-		cs->put(Coordinate{ xchar,ychar });
+		int x = xchar - '0';
+		cs->put(Coordinate{ y,x});
 		MoveResult cmr;
 		mr->get(cmr);
 		if (cmr == Quit) {
@@ -528,6 +534,10 @@ int UI::PlacePieces(Board *b) {
 			break;
 		}
 	}
+	wclear(wnd);
+	wclear(winboard);
+	delwin(wnd);
+	delwin(winboard);
 	endwin();
 	return 1;
 }
@@ -582,6 +592,7 @@ bool ConfirmDialog(char* text) {
 			}
 			//escape
 			else if (cu == '\x1b' ){
+				wclear(winexit);
 				delwin(winexit);
 				clear();
 				return false;
