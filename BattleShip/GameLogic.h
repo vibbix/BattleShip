@@ -10,7 +10,7 @@ using namespace std;
 class Player {
 public:
 	Player();
-	virtual ~Player() = 0;
+	//virtual ~Player() = 0;
 	//Thread indepedent game loop
 	void StartGameLoop(Channel<MoveResult> *chanin, Channel<Coordinate> *chanout);
 	//Place Pieces on board, verifies all is good
@@ -37,7 +37,7 @@ protected:
 };
 
 // Provide a definition for destructor.
-Player::~Player() {}
+//Player::~Player() {}
 
 //Core Game Logic
 class Game {
@@ -77,3 +77,14 @@ private:
 	Player *P2;
 };
 
+class UserPlayer : public Player {
+public:
+	UserPlayer();
+	UserPlayer(Channel<MoveResult> *ccout, Channel<Coordinate> *ccin);
+	void PlacePieces();
+	Coordinate MakeMove();
+	void ProcessMove(MoveResult mr);
+private:
+	Channel<MoveResult> *chanout;
+	Channel<Coordinate> *chanin;
+};

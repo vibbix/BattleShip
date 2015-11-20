@@ -47,6 +47,7 @@ MoveResult Board::isHit(Coordinate hit) {
 	return Miss;
 }
 
+//TO-DO: FINISH THIS LATER
 bool Board::WillSinkShip(Coordinate c){
 	//For each piece, get all hits.
 	//if the total amount of missing hits is 1,
@@ -56,10 +57,11 @@ bool Board::WillSinkShip(Coordinate c){
 		ls = pc.GetOccupiedSpace();
 		int chit = 0;
 		for (Coordinate h : Hits) {
-			
+			break;
 		}
+		break;
 	}
-
+	return false;
 
 }
 GameResult Board::BoardResult() {

@@ -22,6 +22,10 @@ Coordinate AI::MakeMove() {
 	return Coordinate{ 0,0 };
 }
 
+Coordinate AI::EasyAI() {
+	return GetRandomPoint(false);
+}
+
 Coordinate AI::GetRandomPoint(bool wparity) {
 	//required methods:
 	//getsunkships()
@@ -59,16 +63,42 @@ Coordinate AI::GetRandomPoint(bool wparity) {
 			}
 		}
 	}
-	opponentHits->push_back(c);
+	return c;
+	//opponentHits->push_back(c);
 };
+//finish later
 Coordinate AI::GetProbabilityPoint() {
-
+	return Coordinate{ 0,0 };
 };
+//finish later
 Coordinate AI::GetHunterPoint() {
-
+	return Coordinate{ 0,0 };
 };
+//FINISH THIS FUNCTION
+void AI::ProcessMove(MoveResult mr) {
 
+}
 
 void AI::PlacePieces() {
-	
+	PieceType pt[5];
+	for (int i = 0; i < 5; i++) {
+		pt[i] = static_cast<PieceType>(i);
+		Piece pc = Piece();
+		pc.CenterAxis = Coordinate{ 0,0 };
+		int rotate = rand() % 2;
+		if (rotate == 1) {
+			pc.rotateRight();
+		}
+		PlayerBoard->NextValidPieceSpot(&pc, Right);
+		while (PlayerBoard->ValidPieceSpot(pc)) {
+			PlayerBoard->NextValidPieceSpot(&pc, Clockwise);
+		}
+		PlayerBoard->BoardPieces.push_back(pc);
+	}
+	while (!PlayerBoard->BoardisValid()) {
+		for (auto pc : PlayerBoard->BoardPieces) {
+			PlayerBoard->NextValidPieceSpot(&pc, Clockwise);
+		}
+	}
+
 }

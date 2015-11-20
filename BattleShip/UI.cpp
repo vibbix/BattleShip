@@ -5,7 +5,6 @@
 
 #pragma region MenuCode
 
-
 void UI::DisplayTitleScreen() {
 	WINDOW* wnd = initscr();
 	curs_set(0);
@@ -148,7 +147,7 @@ void UI::StartUI() {
 	if (result == 1) {
 		return;
 	}
-	Difficulty aidiff = SelectDifficulty();
+	CAI = SelectDifficulty();
 	//CurrentGame = Game();
 	PlacePieces(CurrentGame.GetP1Board());
 	return;
@@ -156,10 +155,78 @@ void UI::StartUI() {
 //Finish later
 GameResult UI::PlayGame() {
 	//create two grids: Player & enemy
+	Channel<MoveResult> *mr = new Channel<MoveResult>();
+	Channel<Coordinate> *cs = new Channel<Coordinate>();
+	CurrentGame.SetP1(&UserPlayer(mr, cs));
+	CurrentGame.SetP2(&AI(CAI));
+	initscr();
+	WINDOW *PlayerBoard = newwin(23, 24, 1, 1);
+	WINDOW *AIBoard = newwin(23, 24, 1, 30);
+	WINDOW *EntryArea = newwin(3, 3, 15, 20);
+	SetColor(PlayerBoard, 1, COLOR_WHITE, COLOR_BLACK);
+	SetColor(AIBoard, 1, COLOR_WHITE, COLOR_BLACK);
+	SetColor(PlayerBoard, 2, COLOR_RED, COLOR_BLACK);
+	SetColor(AIBoard, 2, COLOR_RED, COLOR_BLACK);
+	wborder(PlayerBoard, '|', '|', '-', '-', '+', '+', '+', '+');
+	wborder(AIBoard, '|', '|', '-', '-', '+', '+', '+', '+');
+	wborder(EntryArea, '|', '|', '-', '-', '+', '+', '+', '+');
+	noecho();
+	//cbreak();
+	curs_set(0);
+	UserPlayer up;
+	keypad(stdscr, TRUE);
+	std::thread cg(&Game::PlayGame, &CurrentGame);
 	while (true) {
-		//Create grids
+		RenderToGrid(PlayerBoard, CurrentGame.GetP1Board()->Hits);
+		RenderToGrid(AIBoard, CurrentGame.GetP2Board()->Hits);
+		//render playerboard
+		mvwprintw(PlayerBoard, 1, 4, "A B C D E F G H I J");
+		for (int i = 0; i < 22; i += 2) {
+			SetColor(PlayerBoard, 2);
+			string gletter = std::to_string(i / 2);
+			SetColor(PlayerBoard, 2);
+			mvwprintw(PlayerBoard, i + 3, 4, "0 0 0 0 0 0 0 0 0 0");
+			SetColor(PlayerBoard, 1);
+			if (i % 2 == 0) {
+				SetColor(PlayerBoard, 1);
+				mvwprintw(PlayerBoard, i + 3, 1, gletter.c_str());
+			}
+		}
+		//render ai board
+		mvwprintw(AIBoard, 1, 4, "A B C D E F G H I J");
+		for (int i = 0; i < 22; i += 2) {
+			SetColor(AIBoard, 2);
+			string gletter = std::to_string(i / 2);
+			SetColor(AIBoard, 2);
+			mvwprintw(AIBoard, i + 3, 4, "0 0 0 0 0 0 0 0 0 0");
+			SetColor(AIBoard, 1);
+			if (i % 2 == 0) {
+				SetColor(AIBoard, 1);
+				mvwprintw(AIBoard, i + 3, 1, gletter.c_str());
+			}
+		}
+		//
+		char ychar = getchar();
+		while (ychar < 'A' || ychar > 'J') {
+			ychar = getchar();
+			mvwprintw(EntryArea, 2, 2, &ychar);
+		}
+		int y = ychar - 'A';
+
+		char xchar = getchar();
+		while (xchar < '0' || xchar > '9') {
+			xchar = getchar();
+			mvwprintw(EntryArea, 2, 2, &xchar);
+		}
+		cs->put(Coordinate{ xchar,ychar });
+		MoveResult cmr;
+		mr->get(cmr);
+		if (cmr == Quit) {
+			break;
+		}
 	}
-	return InProgress;
+	cg.join();
+	return Win;
 }
 
 int UI::PlacePieces(Board *b) {
@@ -478,6 +545,18 @@ void UI::RenderToGrid (WINDOW* wnd, Piece pc, char* l) {
 		}
 	}
 }
+
+void UI::RenderToGrid(WINDOW* wnd, vector<Coordinate> ls, char* l) {
+	for (auto c : ls) {
+		if (c.x < 0 || c.x > 9 || c.y < 0 || c.y > 9) {
+			break;
+		}
+		else {
+			mvwprintw(wnd, (c.x * 2) + 3, (c.y * 2) + 4, l);
+		}
+	}
+}
+
 
 bool ConfirmDialog(char* text) {
 	//newwin:(height, width, starty,startx)

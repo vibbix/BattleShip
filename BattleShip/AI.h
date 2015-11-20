@@ -26,15 +26,15 @@ public:
 private:
 	/* http://www.datagenetics.com/blog/december32011/ */
 	//EasyAI, just random hits
-	void EasyAI();
+	Coordinate EasyAI();
 	Difficulty aiIntel;
 	//MediumAI, uses random hits + direction attempting
-	void MediumAI();
+	//void MediumAI();
 	Coordinate current;//Current Coordinate
 	int AvailableDirections; //[N, E, S, W] -> [8, 4, 2, 1]
 	int lastDirection;
 	//AdvanceAI, uses probability
-	void AdvanceAI();
+	//void AdvanceAI();
 	//Stage 1:get point to target
 	Coordinate GetRandomPoint(bool wparity = false);
 	Coordinate GetProbabilityPoint();

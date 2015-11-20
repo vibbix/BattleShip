@@ -155,3 +155,23 @@ void Player::setHits(vector<Coordinate> *oh) {
 	opponentHits = oh;
 }
 #pragma endregion
+
+#pragma region UserPlayerCode
+UserPlayer::UserPlayer() {}
+#pragma region UserPlayerCode
+UserPlayer::UserPlayer(Channel<MoveResult> *ccout, Channel<Coordinate> *ccin) {
+	chanin = ccin;
+	chanout = ccout;
+}
+void UserPlayer::PlacePieces() {
+	return;
+}
+Coordinate UserPlayer::MakeMove() {
+	Coordinate c;
+	chanin->get(c);
+	return c;
+}
+void UserPlayer::ProcessMove(MoveResult mr) {
+	chanout->put(mr);
+}
+#pragma endregion
